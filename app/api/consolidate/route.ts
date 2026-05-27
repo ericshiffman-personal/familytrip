@@ -3,6 +3,8 @@ import { callClaudeJSON } from '@/lib/claude';
 import { buildConsolidatePrompt } from '@/lib/prompts';
 import { TripInputs, Destination } from '@/types';
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const { pastedText, tripInputs, destination }: {

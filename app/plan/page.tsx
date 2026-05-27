@@ -126,6 +126,7 @@ export default function PlanPage() {
               <DealBreakers
                 dealBreakers={inputs.dealBreakers}
                 previousBadExperience={inputs.previousBadExperience || ''}
+                vibes={inputs.vibes}
                 onDealBreakersChange={(v) => setInputs({ ...inputs, dealBreakers: v })}
                 onPreviousBadExperienceChange={(v) =>
                   setInputs({ ...inputs, previousBadExperience: v })

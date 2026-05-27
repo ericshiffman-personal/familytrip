@@ -6,7 +6,7 @@ const client = new Anthropic({
 
 export async function callClaude(prompt: string, maxTokens = 2048): Promise<string> {
   const message = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: maxTokens,
     messages: [
       {
@@ -30,7 +30,7 @@ export async function callClaudeJSON<T>(prompt: string, maxTokens = 2048): Promi
   // Extract JSON from response (handles cases where model adds extra text)
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    throw new Error('No JSON found in Claude response');
+    throw new Error(`No JSON found in Claude response. Response was: ${text.slice(0, 200)}`);
   }
 
   return JSON.parse(jsonMatch[0]) as T;

@@ -3,6 +3,8 @@ import { callClaudeJSON } from '@/lib/claude';
 import { buildRecommendationPrompt } from '@/lib/prompts';
 import { TripInputs, RecommendationResponse } from '@/types';
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const inputs: TripInputs = await request.json();

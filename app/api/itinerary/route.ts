@@ -3,6 +3,8 @@ import { callClaudeJSON } from '@/lib/claude';
 import { buildItineraryPrompt } from '@/lib/prompts';
 import { TripInputs, Destination } from '@/types';
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const { tripInputs, destination }: { tripInputs: TripInputs; destination: Destination } =

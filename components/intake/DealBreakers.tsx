@@ -1,27 +1,79 @@
 'use client';
 
+import { VibeSelections } from '@/types';
+
 interface DealBreakersProps {
   dealBreakers: string;
   previousBadExperience: string;
+  vibes: VibeSelections;
   onDealBreakersChange: (value: string) => void;
   onPreviousBadExperienceChange: (value: string) => void;
 }
 
-const EXAMPLES = [
-  "No 10+ hour flights with our toddler",
-  "Must have a calm beach — no strong waves",
-  "Can't be humid in July",
-  "Need to be able to loop back to the car for snacks",
-  "No crowds or tourist traps",
-  "Needs a pool — kids won't do beaches all day",
-];
+function getContextualExamples(vibes: VibeSelections): string[] {
+  const examples: string[] = [];
+
+  // Environment-specific
+  if (vibes.environment === 'beach') {
+    examples.push("Must have a calm beach — no strong waves or riptides");
+    examples.push("No seaweed or jellyfish problems");
+    examples.push("Needs a pool as backup on rough beach days");
+  } else if (vibes.environment === 'mountains') {
+    examples.push("Trails must be manageable for young kids");
+    examples.push("Need to be able to loop back to the car easily");
+    examples.push("No exposed heights or dangerous cliff paths");
+  } else {
+    // No selection yet — show both
+    examples.push("Must have a calm beach — no strong waves");
+    examples.push("Trails must be manageable for young kids");
+  }
+
+  // Transport-specific
+  if (vibes.transport === 'fly') {
+    examples.push("No 10+ hour flights with our kids");
+    examples.push("No more than one connection");
+  } else if (vibes.transport === 'drive') {
+    examples.push("Need to loop back to the car for snacks and supplies");
+    examples.push("No more than 6 hours of driving total");
+  } else {
+    examples.push("No 10+ hour flights with our kids");
+    examples.push("Need to loop back to the car for snacks");
+  }
+
+  // Pace-specific
+  if (vibes.pace === 'relaxed') {
+    examples.push("No packed itineraries — we need breathing room");
+    examples.push("Must have easy food options close by");
+  } else if (vibes.pace === 'adventure') {
+    examples.push("No resort-only trips with nothing to do nearby");
+    examples.push("Needs variety — can't do the same thing two days in a row");
+  }
+
+  // Accommodation-specific
+  if (vibes.accommodation === 'allinclusive') {
+    examples.push("No hidden costs or nickel-and-diming");
+    examples.push("Must have a real kids' program or club");
+  } else if (vibes.accommodation === 'rental') {
+    examples.push("Must have a full kitchen — eating out every meal is too hard");
+  }
+
+  // Always relevant
+  examples.push("No crowds or tourist traps");
+  examples.push("Can't be oppressively hot/humid in summer");
+
+  // Deduplicate and cap at 7
+  return [...new Set(examples)].slice(0, 7);
+}
 
 export default function DealBreakers({
   dealBreakers,
   previousBadExperience,
+  vibes,
   onDealBreakersChange,
   onPreviousBadExperienceChange,
 }: DealBreakersProps) {
+  const examples = getContextualExamples(vibes);
+
   const tapExample = (ex: string) => {
     const current = dealBreakers.trim();
     onDealBreakersChange(current ? `${current}. ${ex}` : ex);
@@ -53,15 +105,15 @@ export default function DealBreakers({
           className="w-full bg-sand border border-sand-dark rounded-xl px-4 py-3 text-sm text-deep focus:outline-none focus:border-coral resize-none placeholder-deep/30 transition-colors"
         />
 
-        {/* Tap-to-add examples */}
+        {/* Context-aware tap-to-add examples */}
         <div className="mt-3">
-          <p className="text-xs text-deep/40 mb-2">Common ones (tap to add):</p>
+          <p className="text-xs text-deep/40 mb-2">Based on your selections (tap to add):</p>
           <div className="flex flex-wrap gap-2">
-            {EXAMPLES.map((ex) => (
+            {examples.map((ex) => (
               <button
                 key={ex}
                 onClick={() => tapExample(ex)}
-                className="text-xs bg-sand-dark hover:bg-coral-light hover:text-coral text-deep/60 px-3 py-1.5 rounded-full transition-colors"
+                className="text-xs bg-sand-dark hover:bg-coral-light hover:text-coral text-deep/60 px-3 py-1.5 rounded-full transition-colors text-left"
               >
                 {ex}
               </button>
@@ -70,10 +122,11 @@ export default function DealBreakers({
         </div>
       </div>
 
-      {/* Previous bad experience — collapsible / optional */}
+      {/* Previous bad experience */}
       <div className="bg-white rounded-2xl p-6 border border-sand-dark">
         <label className="block text-sm font-bold text-deep mb-1">
-          What went wrong on a past trip? <span className="font-normal text-deep/40">(optional)</span>
+          What went wrong on a past trip?{' '}
+          <span className="font-normal text-deep/40">(optional)</span>
         </label>
         <p className="text-xs text-deep/45 mb-3">
           Our most overplanners find this helps. We&apos;ll make sure we don&apos;t repeat it.
