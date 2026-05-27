@@ -46,10 +46,10 @@ export default function TripPage() {
     }
   }, [slug, router]);
 
-  // Fetch hero photo when destination is known
+  // Fetch hero photo when destination is known — just the name for best specificity
   useEffect(() => {
     if (!destination) return;
-    fetch(`/api/photo?q=${encodeURIComponent(destination.name + ' travel scenery')}`)
+    fetch(`/api/photo?q=${encodeURIComponent(destination.name)}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => { if (data) setHeroPhoto(data); })
       .catch(() => {});

@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Destination } from '@/types';
-import { UnsplashPhoto } from '@/lib/unsplash';
+// import type — UnsplashPhoto is a TypeScript interface only; this ensures the
+// server-only lib/unsplash module never gets bundled into the client.
+import type { UnsplashPhoto } from '@/lib/unsplash';
 
 interface DestinationCardProps {
   destination: Destination;
@@ -29,10 +31,10 @@ export default function DestinationCard({
 }: DestinationCardProps) {
   const [photo, setPhoto] = useState<UnsplashPhoto | null>(null);
 
-  // Fetch a destination-specific photo on mount — silently falls back to gradient
+  // Fetch a destination-specific photo on mount — silently falls back to gradient.
+  // Just the destination name gives Unsplash the best signal for specific results.
   useEffect(() => {
-    const query = `${destination.name} travel scenery`;
-    fetch(`/api/photo?q=${encodeURIComponent(query)}`)
+    fetch(`/api/photo?q=${encodeURIComponent(destination.name)}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => { if (data) setPhoto(data); })
       .catch(() => {});
