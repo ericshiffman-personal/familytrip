@@ -1,6 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
+import { getUnsplashPhoto } from "@/lib/unsplash";
 
-export default function Home() {
+// Homepage is a Server Component — photo is fetched server-side and cached 24h.
+// If UNSPLASH_ACCESS_KEY is not set, hero falls back to the navy gradient.
+export default async function Home() {
+  const heroPhoto = await getUnsplashPhoto("tropical beach vacation scenery paradise");
+
   return (
     <main className="flex flex-col min-h-screen bg-cream">
 
@@ -15,33 +21,82 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-6 py-24 md:py-36 page-enter">
-        <div className="inline-flex items-center gap-2 bg-navy-light text-navy text-xs font-semibold px-4 py-1.5 rounded-full mb-8 tracking-wide uppercase">
-          For the parents with 47 TripAdvisor tabs open
+      <section className="relative flex flex-col items-center justify-center text-center px-6 py-28 md:py-40 min-h-[72vh] overflow-hidden">
+
+        {/* Background photo (only rendered if Unsplash key is set) */}
+        {heroPhoto ? (
+          <>
+            <Image
+              src={heroPhoto.url}
+              alt={heroPhoto.altDescription || "Beautiful travel destination"}
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+            />
+            {/* Gradient overlay — heavier at top and bottom for legibility */}
+            <div className="absolute inset-0 bg-gradient-to-b from-navy/75 via-navy/55 to-navy/80" />
+          </>
+        ) : (
+          /* Fallback: navy-to-teal gradient if no photo */
+          <div className="absolute inset-0 bg-gradient-to-br from-navy via-navy-mid to-teal-900" />
+        )}
+
+        {/* Hero content */}
+        <div className="relative z-10 page-enter">
+          <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-semibold px-4 py-1.5 rounded-full mb-8 tracking-wide uppercase">
+            For the parents with 47 TripAdvisor tabs open
+          </div>
+
+          <h1 className="font-display text-5xl md:text-7xl font-bold text-white leading-tight max-w-4xl mb-6">
+            We&apos;ll make<br />
+            <span className="text-coral">the call.</span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-white/80 max-w-xl mb-10 leading-relaxed">
+            Tell us about your family. We&apos;ll give you a confident recommendation,
+            explain every tradeoff honestly, and build a plan around your actual kids —
+            nap schedules and all.
+          </p>
+
+          <Link
+            href="/plan"
+            className="inline-flex items-center gap-3 bg-coral hover:bg-coral-dark text-white font-semibold text-base px-8 py-4 rounded-xl transition-colors shadow-xl shadow-coral/30"
+          >
+            Plan our trip
+            <span>→</span>
+          </Link>
+
+          <p className="mt-5 text-sm text-white/45">
+            Free · No account needed · About 2 minutes
+          </p>
         </div>
 
-        <h1 className="font-display text-5xl md:text-7xl font-bold text-navy leading-tight max-w-4xl mb-6">
-          We'll make<br />
-          <span className="text-coral">the call.</span>
-        </h1>
-
-        <p className="text-lg md:text-xl text-ink-soft max-w-xl mb-10 leading-relaxed">
-          Tell us about your family. We'll give you a confident recommendation,
-          explain every tradeoff honestly, and build a plan around your actual kids —
-          nap schedules and all.
-        </p>
-
-        <Link
-          href="/plan"
-          className="inline-flex items-center gap-3 bg-coral hover:bg-coral-dark text-white font-semibold text-base px-8 py-4 rounded-xl transition-colors shadow-lg shadow-coral/20"
-        >
-          Plan our trip
-          <span>→</span>
-        </Link>
-
-        <p className="mt-5 text-sm text-ink-muted">
-          Free · No account needed · About 2 minutes
-        </p>
+        {/* Unsplash attribution — required by API guidelines */}
+        {heroPhoto && (
+          <div className="absolute bottom-4 right-5 z-10">
+            <p className="text-white/30 text-xs">
+              Photo by{" "}
+              <a
+                href={heroPhoto.photographerUrl}
+                className="hover:text-white/60 underline underline-offset-2 transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {heroPhoto.photographer}
+              </a>
+              {" "}on{" "}
+              <a
+                href={heroPhoto.unsplashUrl}
+                className="hover:text-white/60 underline underline-offset-2 transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Unsplash
+              </a>
+            </p>
+          </div>
+        )}
       </section>
 
       {/* Our Call preview */}
@@ -88,7 +143,7 @@ export default function Home() {
             </div>
 
             <div className="bg-cream rounded-xl p-4 border-l-4 border-coral">
-              <p className="text-xs font-bold text-ink-muted uppercase tracking-wide mb-1">
+              <p className="text-xs font-bold text-coral uppercase tracking-wide mb-1">
                 The Hidden Catch
               </p>
               <p className="text-sm text-ink-soft">
@@ -152,8 +207,8 @@ export default function Home() {
             Parent Math
           </p>
           <p className="font-display text-2xl md:text-3xl font-bold text-white leading-snug">
-            "The hotel that&apos;s $90 more per night but lets you walk back for naps
-            may be cheaper than daily rideshares, snack bribes, and a dinner meltdown."
+            &ldquo;The hotel that&apos;s $90 more per night but lets you walk back for naps
+            may be cheaper than daily rideshares, snack bribes, and a dinner meltdown.&rdquo;
           </p>
         </div>
       </section>
