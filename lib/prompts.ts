@@ -89,7 +89,8 @@ For heroGradient, use Tailwind gradient class names like "from-blue-400 to-cyan-
 
 export function buildItineraryPrompt(inputs: TripInputs, destination: Destination): string {
   const familyContext = buildFamilyContext(inputs);
-  const durationDays = inputs.duration === '3-4 days' ? 4 : inputs.duration === '5-7 days' ? 6 : inputs.duration === '8-10 days' ? 9 : 12;
+  // Cap at 5 days for reliable API responses — longer trips will be paginated in a future build
+  const durationDays = inputs.duration === '3-4 days' ? 4 : 5;
 
   return `You are a family travel planner building a day-by-day itinerary for a specific family. Be practical, specific, and honest. This is not a generic travel guide.
 

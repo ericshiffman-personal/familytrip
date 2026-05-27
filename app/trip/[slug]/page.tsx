@@ -46,11 +46,14 @@ export default function TripPage() {
     }
   }, [slug, router]);
 
+  // Load sequentially — itinerary first, then packing — to avoid hammering the API simultaneously
   useEffect(() => {
-    if (destination && tripInputs) {
-      loadItinerary();
-      loadPackingList();
-    }
+    if (!destination || !tripInputs) return;
+    const runSequential = async () => {
+      await loadItinerary();
+      await loadPackingList();
+    };
+    runSequential();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destination, tripInputs]);
 
@@ -64,11 +67,12 @@ export default function TripPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tripInputs, destination }),
       });
-      if (!res.ok) throw new Error('Failed');
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load itinerary');
+      if (!data.days || !Array.isArray(data.days)) throw new Error('Invalid itinerary format returned');
       setItinerary(data.days);
-    } catch {
-      setItineraryError('Could not load itinerary. Please try again.');
+    } catch (err) {
+      setItineraryError(err instanceof Error ? err.message : 'Could not load itinerary. Please try again.');
     } finally {
       setItineraryLoading(false);
     }
@@ -84,11 +88,12 @@ export default function TripPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tripInputs, destination }),
       });
-      if (!res.ok) throw new Error('Failed');
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load packing list');
+      if (!data.categories || !Array.isArray(data.categories)) throw new Error('Invalid packing list format returned');
       setPackingList(data.categories);
-    } catch {
-      setPackingError('Could not load packing list. Please try again.');
+    } catch (err) {
+      setPackingError(err instanceof Error ? err.message : 'Could not load packing list. Please try again.');
     } finally {
       setPackingLoading(false);
     }
