@@ -36,48 +36,42 @@ export default function FamilyForm({
     onChildrenChange(updated);
   };
 
-  const ageLabel = (age: number) => {
-    if (age === 0) return 'Under 1';
-    if (age === 1) return '1 year old';
-    return `${age} years old`;
-  };
-
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-deep mb-2">Tell us about your family</h2>
-        <p className="text-deep/50 text-sm">Who&apos;s coming on this trip?</p>
+        <h2 className="font-display text-2xl font-bold text-navy mb-2">Tell us about your family</h2>
+        <p className="text-ink-muted text-sm">Who&apos;s coming on this trip?</p>
       </div>
 
       {/* Adults */}
-      <div className="bg-white rounded-2xl p-6 border border-sand-dark">
-        <label className="block text-sm font-semibold text-deep mb-4">
+      <div className="card p-6">
+        <label className="block text-sm font-semibold text-navy mb-4">
           Adults traveling
         </label>
         <div className="flex items-center gap-4">
           <button
             onClick={() => onAdultsChange(Math.max(1, adults - 1))}
-            className="w-10 h-10 rounded-full border-2 border-sand-dark text-deep font-bold hover:border-coral hover:text-coral transition-colors text-lg"
+            className="w-10 h-10 rounded-full border-2 border-cream-dark text-ink font-bold hover:border-coral hover:text-coral transition-colors text-lg"
           >
             −
           </button>
-          <span className="text-2xl font-bold text-deep w-8 text-center">{adults}</span>
+          <span className="text-2xl font-bold text-navy w-8 text-center">{adults}</span>
           <button
             onClick={() => onAdultsChange(Math.min(8, adults + 1))}
-            className="w-10 h-10 rounded-full border-2 border-sand-dark text-deep font-bold hover:border-coral hover:text-coral transition-colors text-lg"
+            className="w-10 h-10 rounded-full border-2 border-cream-dark text-ink font-bold hover:border-coral hover:text-coral transition-colors text-lg"
           >
             +
           </button>
-          <span className="text-deep/50 text-sm ml-2">
+          <span className="text-ink-muted text-sm ml-2">
             {adults === 1 ? 'adult' : 'adults'}
           </span>
         </div>
       </div>
 
       {/* Children */}
-      <div className="bg-white rounded-2xl p-6 border border-sand-dark">
+      <div className="card p-6">
         <div className="flex items-center justify-between mb-4">
-          <label className="text-sm font-semibold text-deep">
+          <label className="text-sm font-semibold text-navy">
             Kids coming along
           </label>
           <button
@@ -89,7 +83,7 @@ export default function FamilyForm({
         </div>
 
         {children.length === 0 ? (
-          <p className="text-deep/40 text-sm italic">No children added yet — tap &quot;Add a child&quot; above</p>
+          <p className="text-ink-muted text-sm italic">No children added yet — tap &quot;Add a child&quot; above</p>
         ) : (
           <div className="space-y-3">
             {children.map((child, idx) => (
@@ -98,13 +92,13 @@ export default function FamilyForm({
                   {child.age <= 1 ? '👶' : child.age <= 4 ? '🧒' : child.age <= 9 ? '🧑' : '👦'}
                 </span>
                 <div className="flex-1">
-                  <label className="text-xs text-deep/50 mb-1 block">
+                  <label className="text-xs text-ink-muted mb-1 block">
                     Child {idx + 1} age
                   </label>
                   <select
                     value={child.age}
                     onChange={(e) => updateChildAge(idx, parseInt(e.target.value))}
-                    className="w-full bg-sand border border-sand-dark rounded-xl px-3 py-2 text-sm text-deep focus:outline-none focus:border-coral"
+                    className="w-full bg-cream border border-cream-dark rounded-xl px-3 py-2 text-sm text-ink focus:outline-none focus:border-coral"
                   >
                     <option value={0}>Under 1 year old</option>
                     {Array.from({ length: 17 }, (_, i) => i + 1).map((age) => (
@@ -116,7 +110,7 @@ export default function FamilyForm({
                 </div>
                 <button
                   onClick={() => removeChild(idx)}
-                  className="text-deep/30 hover:text-deep/60 transition-colors text-xl leading-none"
+                  className="text-ink-muted hover:text-ink transition-colors text-xl leading-none"
                 >
                   ×
                 </button>
@@ -128,12 +122,12 @@ export default function FamilyForm({
 
       {/* Nap schedule — only show if toddler detected */}
       {(hasToddler || napRequired) && (
-        <div className="bg-ocean-light rounded-2xl p-6 border border-ocean/20">
+        <div className="bg-navy-light rounded-2xl p-6 border border-navy/10">
           <div className="flex items-start gap-3 mb-4">
             <span className="text-xl">😴</span>
             <div>
-              <p className="font-semibold text-deep text-sm">Nap schedule check</p>
-              <p className="text-deep/55 text-xs mt-0.5">
+              <p className="font-semibold text-navy text-sm">Nap schedule check</p>
+              <p className="text-ink-soft text-xs mt-0.5">
                 We noticed you have a little one. Does anyone still need a regular nap?
               </p>
             </div>
@@ -142,24 +136,25 @@ export default function FamilyForm({
           <div className="flex gap-3 mb-4">
             {[
               { label: 'Yes, naps are non-negotiable', value: true },
-              { label: 'Nah, we&apos;re flexible', value: false },
+              { label: "Nah, we're flexible", value: false },
             ].map((opt) => (
               <button
                 key={String(opt.value)}
                 onClick={() => onNapChange(opt.value)}
                 className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-medium border-2 transition-all ${
                   napRequired === opt.value
-                    ? 'border-ocean bg-ocean text-white'
-                    : 'border-sand-dark bg-white text-deep hover:border-ocean/50'
+                    ? 'border-navy bg-navy text-white'
+                    : 'border-cream-dark bg-white text-ink hover:border-navy/40'
                 }`}
-                dangerouslySetInnerHTML={{ __html: opt.label }}
-              />
+              >
+                {opt.label}
+              </button>
             ))}
           </div>
 
           {napRequired && (
             <div>
-              <label className="text-xs font-medium text-deep/60 mb-1.5 block">
+              <label className="text-xs font-medium text-ink-muted mb-1.5 block">
                 Typical nap window (optional — helps us plan the itinerary)
               </label>
               <input
@@ -167,7 +162,7 @@ export default function FamilyForm({
                 placeholder="e.g. 1:00pm – 3:00pm"
                 value={napSchedule}
                 onChange={(e) => onNapChange(true, e.target.value)}
-                className="w-full bg-white border border-sand-dark rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-ocean placeholder-deep/30"
+                className="w-full bg-white border border-cream-dark rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-navy placeholder-ink-muted"
               />
             </div>
           )}

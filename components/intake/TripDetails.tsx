@@ -17,13 +17,13 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-deep mb-2">Trip details</h2>
-        <p className="text-deep/50 text-sm">A few logistics to narrow things down</p>
+        <h2 className="font-display text-2xl font-bold text-navy mb-2">Trip details</h2>
+        <p className="text-ink-muted text-sm">A few logistics to narrow things down</p>
       </div>
 
       {/* Duration */}
       <div>
-        <label className="block text-sm font-semibold text-deep mb-3">
+        <label className="block text-sm font-semibold text-navy mb-3">
           How long is the trip?
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -38,16 +38,16 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
             <button
               key={opt.value}
               onClick={() => update('duration', opt.value)}
-              className={`p-4 rounded-2xl border-2 text-left transition-all ${
+              className={`p-4 rounded-xl border-2 text-left transition-all ${
                 values.duration === opt.value
                   ? 'border-coral bg-coral-light'
-                  : 'border-sand-dark bg-white hover:border-coral/40'
+                  : 'border-cream-dark bg-white hover:border-coral/40'
               }`}
             >
-              <div className={`font-bold text-sm ${values.duration === opt.value ? 'text-coral' : 'text-deep'}`}>
+              <div className={`font-bold text-sm ${values.duration === opt.value ? 'text-coral' : 'text-navy'}`}>
                 {opt.label}
               </div>
-              <div className="text-deep/40 text-xs mt-0.5">{opt.desc}</div>
+              <div className="text-ink-muted text-xs mt-0.5">{opt.desc}</div>
             </button>
           ))}
         </div>
@@ -55,7 +55,7 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
 
       {/* Budget */}
       <div>
-        <label className="block text-sm font-semibold text-deep mb-3">
+        <label className="block text-sm font-semibold text-navy mb-3">
           How does budget feel?
         </label>
         <div className="space-y-2">
@@ -63,7 +63,7 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
             [
               {
                 value: 'budget',
-                label: "Watching it carefully",
+                label: 'Watching it carefully',
                 emoji: '🙏',
                 desc: 'Value matters. We want great for less.',
               },
@@ -84,18 +84,18 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
             <button
               key={opt.value}
               onClick={() => update('budget', opt.value)}
-              className={`w-full p-4 rounded-2xl border-2 text-left transition-all flex items-center gap-4 ${
+              className={`w-full p-4 rounded-xl border-2 text-left transition-all flex items-center gap-4 ${
                 values.budget === opt.value
                   ? 'border-coral bg-coral-light'
-                  : 'border-sand-dark bg-white hover:border-coral/40'
+                  : 'border-cream-dark bg-white hover:border-coral/40'
               }`}
             >
               <span className="text-2xl">{opt.emoji}</span>
               <div>
-                <div className={`font-semibold text-sm ${values.budget === opt.value ? 'text-coral' : 'text-deep'}`}>
+                <div className={`font-semibold text-sm ${values.budget === opt.value ? 'text-coral' : 'text-navy'}`}>
                   {opt.label}
                 </div>
-                <div className="text-deep/45 text-xs mt-0.5">{opt.desc}</div>
+                <div className="text-ink-muted text-xs mt-0.5">{opt.desc}</div>
               </div>
             </button>
           ))}
@@ -104,7 +104,7 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
 
       {/* Departure city */}
       <div>
-        <label className="block text-sm font-semibold text-deep mb-2">
+        <label className="block text-sm font-semibold text-navy mb-2">
           Where are you flying (or driving) from?
         </label>
         <input
@@ -112,16 +112,16 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
           placeholder="e.g. Denver, Chicago, Los Angeles..."
           value={values.departureCity}
           onChange={(e) => update('departureCity', e.target.value)}
-          className="w-full bg-white border-2 border-sand-dark rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-coral placeholder-deep/30 transition-colors"
+          className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors"
         />
-        <p className="text-xs text-deep/40 mt-1.5">
+        <p className="text-xs text-ink-muted mt-1.5">
           This helps us filter by flight time — a 12-hour flight with a toddler is a different trip.
         </p>
       </div>
 
       {/* Travel method */}
       <div>
-        <label className="block text-sm font-semibold text-deep mb-3">
+        <label className="block text-sm font-semibold text-navy mb-3">
           How do you want to travel?
         </label>
         <div className="grid grid-cols-3 gap-2">
@@ -135,14 +135,14 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
             <button
               key={opt.value}
               onClick={() => update('travelMethod', opt.value)}
-              className={`p-4 rounded-2xl border-2 text-center transition-all ${
+              className={`p-4 rounded-xl border-2 text-center transition-all ${
                 values.travelMethod === opt.value
                   ? 'border-coral bg-coral-light'
-                  : 'border-sand-dark bg-white hover:border-coral/40'
+                  : 'border-cream-dark bg-white hover:border-coral/40'
               }`}
             >
               <div className="text-2xl mb-1">{opt.emoji}</div>
-              <div className={`text-sm font-semibold ${values.travelMethod === opt.value ? 'text-coral' : 'text-deep'}`}>
+              <div className={`text-sm font-semibold ${values.travelMethod === opt.value ? 'text-coral' : 'text-navy'}`}>
                 {opt.label}
               </div>
             </button>

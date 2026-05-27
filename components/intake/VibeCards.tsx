@@ -61,7 +61,7 @@ const VIBE_PAIRS: VibePair[] = [
   },
   {
     key: 'transport',
-    question: "How do you want to get there?",
+    question: 'How do you want to get there?',
     left: {
       value: 'fly',
       label: 'Fly Somewhere New',
@@ -97,7 +97,7 @@ const VIBE_PAIRS: VibePair[] = [
   },
   {
     key: 'accommodation',
-    question: "Where do you want to stay?",
+    question: 'Where do you want to stay?',
     left: {
       value: 'allinclusive',
       label: 'All-Inclusive Resort',
@@ -131,8 +131,8 @@ export default function VibeCards({ selections, onChange }: VibeCardsProps) {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-deep mb-2">What&apos;s your vibe?</h2>
-        <p className="text-deep/50 text-sm">
+        <h2 className="font-display text-2xl font-bold text-navy mb-2">What&apos;s your vibe?</h2>
+        <p className="text-ink-muted text-sm">
           Pick your instinct — no overthinking. ({answeredCount}/{totalPairs} answered)
         </p>
       </div>
@@ -146,7 +146,7 @@ export default function VibeCards({ selections, onChange }: VibeCardsProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: pairIdx * 0.08 }}
           >
-            <p className="text-sm font-semibold text-deep/60 mb-3 text-center uppercase tracking-wide">
+            <p className="text-xs font-semibold text-ink-muted mb-3 text-center uppercase tracking-widest">
               {pair.question}
             </p>
             <div className="grid grid-cols-2 gap-3">
@@ -161,11 +161,10 @@ export default function VibeCards({ selections, onChange }: VibeCardsProps) {
                     whileTap={{ scale: 0.97 }}
                     className={`
                       relative rounded-2xl overflow-hidden text-left transition-all duration-200 cursor-pointer
-                      ${isSelected ? 'vibe-card-selected shadow-xl' : 'shadow-sm'}
-                      ${isOtherSelected ? 'opacity-45' : 'opacity-100'}
+                      ${isSelected ? 'ring-4 ring-white shadow-xl' : 'shadow-sm'}
+                      ${isOtherSelected ? 'opacity-40' : 'opacity-100'}
                     `}
                   >
-                    {/* Gradient background */}
                     <div className={`bg-gradient-to-br ${option.gradient} p-5 md:p-6`}>
                       <div className="text-3xl md:text-4xl mb-2">{option.emoji}</div>
                       <div className="text-white font-bold text-base md:text-lg leading-tight mb-1">
@@ -176,7 +175,6 @@ export default function VibeCards({ selections, onChange }: VibeCardsProps) {
                       </div>
                     </div>
 
-                    {/* Selected checkmark */}
                     {isSelected && (
                       <motion.div
                         initial={{ scale: 0 }}
@@ -195,7 +193,7 @@ export default function VibeCards({ selections, onChange }: VibeCardsProps) {
       })}
 
       {answeredCount < totalPairs && (
-        <p className="text-center text-deep/40 text-sm">
+        <p className="text-center text-ink-muted text-sm">
           {totalPairs - answeredCount} more {totalPairs - answeredCount === 1 ? 'choice' : 'choices'} to go
         </p>
       )}

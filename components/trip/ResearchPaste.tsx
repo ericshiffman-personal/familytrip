@@ -25,10 +25,10 @@ interface ResearchPasteProps {
 
 const TYPE_COLORS: Record<string, string> = {
   restaurant: 'bg-orange-100 text-orange-700',
-  activity: 'bg-blue-100 text-blue-700',
+  activity: 'bg-navy-light text-navy',
   hotel: 'bg-purple-100 text-purple-700',
   beach: 'bg-cyan-100 text-cyan-700',
-  tip: 'bg-green-100 text-green-700',
+  tip: 'bg-sage-light text-sage',
 };
 
 export default function ResearchPaste({ tripInputs, destination }: ResearchPasteProps) {
@@ -60,12 +60,12 @@ export default function ResearchPaste({ tripInputs, destination }: ResearchPaste
   return (
     <div className="space-y-4">
       {!result ? (
-        <div className="bg-white rounded-2xl p-6 border border-sand-dark">
+        <div className="card p-6">
           <div className="flex items-start gap-3 mb-4">
             <span className="text-2xl">📋</span>
             <div>
-              <h3 className="font-bold text-deep">Already done some research?</h3>
-              <p className="text-deep/55 text-sm mt-1">
+              <h3 className="font-semibold text-navy">Already done some research?</h3>
+              <p className="text-ink-muted text-sm mt-1">
                 Paste in anything — TripAdvisor reviews, blog posts, notes, Reddit threads.
                 We&apos;ll organize it and flag anything worth double-checking.
               </p>
@@ -77,7 +77,7 @@ export default function ResearchPaste({ tripInputs, destination }: ResearchPaste
             onChange={(e) => setPasted(e.target.value)}
             placeholder="Paste your research here... (reviews, blog posts, your own notes, anything)"
             rows={6}
-            className="w-full bg-sand border border-sand-dark rounded-xl px-4 py-3 text-sm text-deep focus:outline-none focus:border-coral resize-none placeholder-deep/30 transition-colors mb-4"
+            className="w-full bg-cream border border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral resize-none placeholder-ink-muted transition-colors mb-4"
           />
 
           {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
@@ -87,8 +87,8 @@ export default function ResearchPaste({ tripInputs, destination }: ResearchPaste
             disabled={!pasted.trim() || loading}
             className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${
               pasted.trim() && !loading
-                ? 'bg-deep hover:bg-deep/90 text-white'
-                : 'bg-sand-dark text-deep/30 cursor-not-allowed'
+                ? 'bg-navy hover:bg-navy-mid text-white'
+                : 'bg-cream-dark text-ink-muted cursor-not-allowed'
             }`}
           >
             {loading ? (
@@ -108,10 +108,10 @@ export default function ResearchPaste({ tripInputs, destination }: ResearchPaste
             className="space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-deep">Your research, organized</h3>
+              <h3 className="font-semibold text-navy">Your research, organized</h3>
               <button
                 onClick={() => { setResult(null); setPasted(''); }}
-                className="text-xs text-deep/40 hover:text-deep transition-colors"
+                className="text-xs text-ink-muted hover:text-ink transition-colors"
               >
                 Paste more →
               </button>
@@ -120,13 +120,13 @@ export default function ResearchPaste({ tripInputs, destination }: ResearchPaste
             {/* Highlights */}
             <div className="space-y-3">
               {result.highlights.map((item, idx) => (
-                <div key={idx} className="bg-white rounded-2xl p-4 border border-sand-dark">
+                <div key={idx} className="card p-4">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full capitalize ${TYPE_COLORS[item.type] || 'bg-sand text-deep/50'}`}>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full capitalize ${TYPE_COLORS[item.type] || 'bg-cream-dark text-ink-muted'}`}>
                         {item.type}
                       </span>
-                      <span className="font-semibold text-deep text-sm">{item.title}</span>
+                      <span className="font-semibold text-navy text-sm">{item.title}</span>
                     </div>
                     {item.verifyBefore && (
                       <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full flex-shrink-0">
@@ -134,7 +134,7 @@ export default function ResearchPaste({ tripInputs, destination }: ResearchPaste
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-deep/70 leading-relaxed">{item.notes}</p>
+                  <p className="text-sm text-ink-soft leading-relaxed">{item.notes}</p>
                   {item.verifyBefore && item.verifyReason && (
                     <p className="text-xs text-amber-600 mt-2">→ {item.verifyReason}</p>
                   )}
@@ -148,7 +148,7 @@ export default function ResearchPaste({ tripInputs, destination }: ResearchPaste
                 <p className="text-xs font-bold text-coral uppercase tracking-wide mb-3">💡 Key tips from your research</p>
                 <ul className="space-y-2">
                   {result.consolidatedTips.map((tip, idx) => (
-                    <li key={idx} className="text-sm text-deep/75 flex gap-2">
+                    <li key={idx} className="text-sm text-ink-soft flex gap-2">
                       <span className="text-coral flex-shrink-0">·</span>
                       {tip}
                     </li>
@@ -163,7 +163,7 @@ export default function ResearchPaste({ tripInputs, destination }: ResearchPaste
                 <p className="text-xs font-bold text-amber-600 uppercase tracking-wide mb-3">🚩 Worth double-checking</p>
                 <ul className="space-y-2">
                   {result.redFlags.map((flag, idx) => (
-                    <li key={idx} className="text-sm text-deep/75 flex gap-2">
+                    <li key={idx} className="text-sm text-ink-soft flex gap-2">
                       <span className="text-amber-500 flex-shrink-0">·</span>
                       {flag}
                     </li>

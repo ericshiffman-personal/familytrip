@@ -10,7 +10,7 @@ export default function ProgressSteps({ currentStep, totalSteps, labels }: Progr
   return (
     <div className="w-full max-w-lg mx-auto mb-8">
       {/* Progress bar */}
-      <div className="h-1.5 bg-sand-dark rounded-full overflow-hidden mb-4">
+      <div className="h-1.5 bg-cream-dark rounded-full overflow-hidden mb-4">
         <div
           className="h-full bg-coral rounded-full transition-all duration-500 ease-out"
           style={{ width: `${(currentStep / totalSteps) * 100}%` }}
@@ -31,14 +31,14 @@ export default function ProgressSteps({ currentStep, totalSteps, labels }: Progr
                     ? 'bg-coral text-white'
                     : isCurrent
                     ? 'bg-coral text-white ring-4 ring-coral/20'
-                    : 'bg-sand-dark text-deep/30'
+                    : 'bg-cream-dark text-ink-muted'
                 }`}
               >
                 {isComplete ? '✓' : step}
               </div>
               <span
                 className={`text-xs hidden md:block transition-colors ${
-                  isCurrent ? 'text-coral font-medium' : isComplete ? 'text-deep/40' : 'text-deep/25'
+                  isCurrent ? 'text-coral font-medium' : isComplete ? 'text-ink-muted' : 'text-stone'
                 }`}
               >
                 {label}

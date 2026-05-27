@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { loadTripInputs } from '@/lib/profile';
 import { TripInputs, Destination, ItineraryDay as ItineraryDayType, PackingCategory, RecommendationResponse } from '@/types';
@@ -36,7 +35,6 @@ export default function TripPage() {
     }
     setTripInputs(inputs);
 
-    // Recover destination from sessionStorage
     const recKey = 'familytrip_recommendations';
     const raw = sessionStorage.getItem(recKey);
     if (raw) {
@@ -101,45 +99,43 @@ export default function TripPage() {
 
   if (!destination || !tripInputs) {
     return (
-      <div className="min-h-screen bg-sand flex items-center justify-center">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center">
           <div className="text-4xl mb-3 animate-pulse">🗺️</div>
-          <p className="text-deep/50 text-sm">Loading your trip...</p>
+          <p className="text-ink-muted text-sm">Loading your trip...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-sand">
-      {/* Header */}
-      <div className={`bg-gradient-to-r ${destination.heroGradient} px-6 py-8`}>
+    <div className="min-h-screen bg-cream">
+      {/* Hero header */}
+      <div className={`bg-gradient-to-br ${destination.heroGradient} px-6 py-10`}>
         <div className="max-w-2xl mx-auto">
-          <Link href="/results" className="text-white/60 text-sm hover:text-white transition-colors mb-4 inline-block">
+          <Link href="/results" className="text-white/60 text-sm hover:text-white transition-colors mb-5 inline-block">
             ← Back to options
           </Link>
-          <div>
-            <h1 className="font-display text-3xl font-bold text-white mb-1">{destination.name}</h1>
-            <p className="text-white/70 text-sm">{destination.tagline}</p>
-          </div>
+          <h1 className="font-display text-3xl font-bold text-white mb-1">{destination.name}</h1>
+          <p className="text-white/70 text-sm">{destination.tagline}</p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b border-sand-dark sticky top-0 z-40">
-        <div className="max-w-2xl mx-auto px-6 flex gap-1">
+      <div className="bg-white border-b border-cream-dark sticky top-0 z-40 shadow-sm">
+        <div className="max-w-2xl mx-auto px-6 flex">
           {([
             { key: 'itinerary', label: '📅 Itinerary' },
-            { key: 'packing', label: '🧳 Packing List' },
+            { key: 'packing', label: '🧳 Packing' },
             { key: 'research', label: '📋 My Research' },
           ] as { key: Tab; label: string }[]).map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`py-4 px-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`py-4 px-4 text-sm font-semibold border-b-2 transition-colors ${
                 activeTab === tab.key
                   ? 'border-coral text-coral'
-                  : 'border-transparent text-deep/50 hover:text-deep'
+                  : 'border-transparent text-ink-muted hover:text-navy'
               }`}
             >
               {tab.label}
@@ -153,23 +149,23 @@ export default function TripPage() {
         {activeTab === 'itinerary' && (
           <div>
             {itineraryLoading && (
-              <div className="text-center py-12">
+              <div className="text-center py-16">
                 <div className="text-4xl mb-3 animate-bounce">📅</div>
-                <p className="text-deep/50 text-sm">Building your day-by-day plan...</p>
+                <p className="text-ink-muted text-sm">Building your day-by-day plan...</p>
               </div>
             )}
             {itineraryError && (
-              <div className="text-center py-8">
-                <p className="text-deep/50 text-sm mb-4">{itineraryError}</p>
-                <button onClick={loadItinerary} className="text-coral text-sm underline">Try again</button>
+              <div className="text-center py-10">
+                <p className="text-ink-soft text-sm mb-4">{itineraryError}</p>
+                <button onClick={loadItinerary} className="text-coral text-sm font-semibold underline">Try again</button>
               </div>
             )}
             {itinerary && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-lg font-bold text-deep">Your {tripInputs.duration} itinerary</h2>
-                  <span className="text-xs text-deep/30 bg-white px-3 py-1 rounded-full border border-sand-dark">
-                    Draft · verify before booking
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-display text-xl font-bold text-navy">Your {tripInputs.duration} itinerary</h2>
+                  <span className="text-xs text-ink-muted bg-white px-3 py-1 rounded-full border border-cream-dark">
+                    Verify before booking
                   </span>
                 </div>
                 {itinerary.map((day, idx) => (
@@ -183,22 +179,22 @@ export default function TripPage() {
         {activeTab === 'packing' && (
           <div>
             {packingLoading && (
-              <div className="text-center py-12">
+              <div className="text-center py-16">
                 <div className="text-4xl mb-3 animate-bounce">🧳</div>
-                <p className="text-deep/50 text-sm">Building your personalized packing list...</p>
+                <p className="text-ink-muted text-sm">Building your personalized packing list...</p>
               </div>
             )}
             {packingError && (
-              <div className="text-center py-8">
-                <p className="text-deep/50 text-sm mb-4">{packingError}</p>
-                <button onClick={loadPackingList} className="text-coral text-sm underline">Try again</button>
+              <div className="text-center py-10">
+                <p className="text-ink-soft text-sm mb-4">{packingError}</p>
+                <button onClick={loadPackingList} className="text-coral text-sm font-semibold underline">Try again</button>
               </div>
             )}
             {packingList && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-deep">Packing list</h2>
-                  <span className="text-xs text-deep/40">Tap to check off</span>
+                  <h2 className="font-display text-xl font-bold text-navy">Packing list</h2>
+                  <span className="text-xs text-ink-muted">Tap to check off</span>
                 </div>
                 <PackingList categories={packingList} />
               </div>
@@ -208,9 +204,9 @@ export default function TripPage() {
 
         {activeTab === 'research' && (
           <div>
-            <div className="mb-4">
-              <h2 className="text-lg font-bold text-deep mb-1">Your research</h2>
-              <p className="text-deep/50 text-sm">
+            <div className="mb-5">
+              <h2 className="font-display text-xl font-bold text-navy mb-1">Your research</h2>
+              <p className="text-ink-muted text-sm">
                 Been down the TripAdvisor rabbit hole? Paste everything here — we&apos;ll organize it for you.
               </p>
             </div>
@@ -220,16 +216,16 @@ export default function TripPage() {
       </div>
 
       {/* Bottom nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-sand-dark px-6 py-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-cream-dark px-6 py-4 shadow-lg">
         <div className="max-w-2xl mx-auto flex gap-3">
           <Link
             href="/results"
-            className="flex-1 py-3 rounded-2xl border-2 border-sand-dark text-deep text-sm font-medium text-center hover:border-deep/30 transition-colors"
+            className="flex-1 py-3 rounded-xl border-2 border-cream-dark text-ink text-sm font-medium text-center hover:border-navy/30 transition-colors"
           >
             ← Change destination
           </Link>
           <button
-            className="flex-1 py-3 rounded-2xl bg-coral text-white text-sm font-bold hover:bg-coral-dark transition-colors"
+            className="flex-1 py-3 rounded-xl bg-coral text-white text-sm font-bold hover:bg-coral-dark transition-colors shadow-md shadow-coral/20"
             onClick={() => alert('Booking integrations coming soon! For now, use your itinerary to book directly.')}
           >
             Book this trip →

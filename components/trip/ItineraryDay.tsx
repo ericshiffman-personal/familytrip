@@ -14,12 +14,12 @@ export default function ItineraryDay({ day, index }: ItineraryDayProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08 }}
-      className="bg-white rounded-2xl overflow-hidden border border-sand-dark"
+      className="card overflow-hidden"
     >
       {/* Day header */}
-      <div className="bg-deep px-5 py-3 flex items-center justify-between">
+      <div className="bg-navy px-5 py-3 flex items-center justify-between">
         <span className="text-white font-bold text-sm">Day {day.day}</span>
-        <span className="text-white/60 text-sm">{day.title}</span>
+        <span className="text-white/60 text-sm font-medium">{day.title}</span>
       </div>
 
       <div className="p-5 space-y-4">
@@ -31,28 +31,28 @@ export default function ItineraryDay({ day, index }: ItineraryDayProps) {
           <div key={label} className="flex gap-3">
             <div className="flex flex-col items-center gap-1 pt-0.5">
               <span className="text-lg">{emoji}</span>
-              <div className="flex-1 w-px bg-sand-dark min-h-4" />
+              <div className="flex-1 w-px bg-cream-dark min-h-4" />
             </div>
             <div className="pb-2">
-              <p className="text-xs font-bold text-deep/40 uppercase tracking-wide mb-1">
+              <p className="text-xs font-bold text-ink-muted uppercase tracking-wide mb-1">
                 {label}
               </p>
-              <p className="text-sm text-deep/80 leading-relaxed">{content}</p>
+              <p className="text-sm text-ink-soft leading-relaxed">{content}</p>
             </div>
           </div>
         ))}
 
         {day.napNote && (
-          <div className="bg-ocean-light rounded-xl px-4 py-3 flex gap-2 items-start">
+          <div className="bg-navy-light rounded-xl px-4 py-3 flex gap-2 items-start">
             <span>😴</span>
-            <p className="text-sm text-ocean-dark leading-relaxed">{day.napNote}</p>
+            <p className="text-sm text-navy leading-relaxed">{day.napNote}</p>
           </div>
         )}
 
         {day.tip && (
-          <div className="bg-coral-light rounded-xl px-4 py-3 flex gap-2 items-start">
+          <div className="bg-coral-light rounded-xl px-4 py-3 flex gap-2 items-start border-l-4 border-coral">
             <span>💡</span>
-            <p className="text-sm text-deep/70 leading-relaxed">{day.tip}</p>
+            <p className="text-sm text-ink-soft leading-relaxed">{day.tip}</p>
           </div>
         )}
       </div>

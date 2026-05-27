@@ -35,10 +35,9 @@ export default function PlanPage() {
   const [inputs, setInputs] = useState<TripInputs>(defaultInputs);
   const [loading, setLoading] = useState(false);
 
-  // Validation per step
   const canAdvance = () => {
-    if (step === 1) return Object.keys(inputs.vibes).length >= 3; // at least 3 of 5 vibe pairs answered
-    if (step === 2) return true; // family is always valid (adults default to 2)
+    if (step === 1) return Object.keys(inputs.vibes).length >= 3;
+    if (step === 2) return true;
     if (step === 3) return inputs.departureCity.trim().length > 1;
     if (step === 4) return inputs.dealBreakers.trim().length > 5;
     return false;
@@ -49,7 +48,6 @@ export default function PlanPage() {
       setStep(step + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      // Submit
       setLoading(true);
       saveTripInputs(inputs);
       saveProfile(inputs);
@@ -65,14 +63,14 @@ export default function PlanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-sand">
+    <div className="min-h-screen bg-cream">
       {/* Header */}
-      <div className="bg-white border-b border-sand-dark px-6 py-4 sticky top-0 z-40">
+      <div className="bg-white border-b border-cream-dark px-6 py-4 sticky top-0 z-40">
         <div className="max-w-lg mx-auto flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-deep tracking-tight">
+          <Link href="/" className="font-display text-xl font-bold text-navy tracking-tight">
             family<span className="text-coral">trip</span>
           </Link>
-          <span className="text-sm text-deep/40">
+          <span className="text-sm text-ink-muted">
             Step {step} of {TOTAL_STEPS}
           </span>
         </div>
@@ -136,12 +134,12 @@ export default function PlanPage() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation buttons */}
+        {/* Navigation */}
         <div className="flex gap-3 mt-10 pb-10">
           {step > 1 && (
             <button
               onClick={goBack}
-              className="px-6 py-3 rounded-2xl border-2 border-sand-dark text-deep font-medium hover:border-deep/30 transition-colors"
+              className="px-6 py-3 rounded-xl border-2 border-cream-dark text-ink font-medium hover:border-navy/30 transition-colors"
             >
               ← Back
             </button>
@@ -150,10 +148,10 @@ export default function PlanPage() {
           <button
             onClick={goNext}
             disabled={!canAdvance() || loading}
-            className={`flex-1 py-3 px-6 rounded-2xl font-semibold text-base transition-all ${
+            className={`flex-1 py-3 px-6 rounded-xl font-semibold text-base transition-all ${
               canAdvance() && !loading
                 ? 'bg-coral hover:bg-coral-dark text-white shadow-lg shadow-coral/20'
-                : 'bg-sand-dark text-deep/30 cursor-not-allowed'
+                : 'bg-cream-dark text-ink-muted cursor-not-allowed'
             }`}
           >
             {loading ? (
@@ -161,16 +159,15 @@ export default function PlanPage() {
                 <span className="animate-spin">⟳</span> Getting your recommendations...
               </span>
             ) : step === TOTAL_STEPS ? (
-              'Find our destination ✨'
+              'Find our destination →'
             ) : (
               'Continue →'
             )}
           </button>
         </div>
 
-        {/* Step 1 hint */}
         {step === 1 && Object.keys(inputs.vibes).length < 3 && (
-          <p className="text-center text-xs text-deep/40 -mt-6 pb-6">
+          <p className="text-center text-xs text-ink-muted -mt-6 pb-6">
             Answer at least 3 pairs to continue
           </p>
         )}
