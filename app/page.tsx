@@ -1,11 +1,16 @@
 import Link from "next/link";
-import Image from "next/image";
-import { getUnsplashPhoto } from "@/lib/unsplash";
+import { getUnsplashPhotos } from "@/lib/unsplash";
+import HeroCarousel from "@/components/shared/HeroCarousel";
 
-// Homepage is a Server Component — photo is fetched server-side and cached 24h.
-// If UNSPLASH_ACCESS_KEY is not set, hero falls back to the navy gradient.
+// Homepage is a Server Component — photos fetched server-side and cached 24h.
+// If UNSPLASH_ACCESS_KEY is not set, HeroCarousel falls back to the navy gradient.
 export default async function Home() {
-  const heroPhoto = await getUnsplashPhoto("tropical beach vacation scenery paradise");
+  // Fetch 5 varied travel photos for the rotating carousel.
+  // Separate queries give more variety than one broad query.
+  const heroPhotos = await getUnsplashPhotos(
+    'tropical beach family vacation travel scenic landscape',
+    5
+  );
 
   return (
     <main className="flex flex-col min-h-screen bg-cream">
@@ -20,84 +25,8 @@ export default async function Home() {
         </Link>
       </nav>
 
-      {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center text-center px-6 py-28 md:py-40 min-h-[72vh] overflow-hidden">
-
-        {/* Background photo (only rendered if Unsplash key is set) */}
-        {heroPhoto ? (
-          <>
-            <Image
-              src={heroPhoto.url}
-              alt={heroPhoto.altDescription || "Beautiful travel destination"}
-              fill
-              priority
-              className="object-cover"
-              sizes="100vw"
-            />
-            {/* Gradient overlay — heavier at top and bottom for legibility */}
-            <div className="absolute inset-0 bg-gradient-to-b from-navy/75 via-navy/55 to-navy/80" />
-          </>
-        ) : (
-          /* Fallback: navy-to-teal gradient if no photo */
-          <div className="absolute inset-0 bg-gradient-to-br from-navy via-navy-mid to-teal-900" />
-        )}
-
-        {/* Hero content */}
-        <div className="relative z-10 page-enter">
-          <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-semibold px-4 py-1.5 rounded-full mb-8 tracking-wide uppercase">
-            For the parents with 47 TripAdvisor tabs open
-          </div>
-
-          <h1 className="font-display text-5xl md:text-7xl font-bold text-white leading-tight max-w-4xl mb-6">
-            We&apos;ll make<br />
-            <span className="text-coral">the call.</span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-white/80 max-w-xl mb-10 leading-relaxed">
-            Tell us about your family. We&apos;ll give you a confident recommendation,
-            explain every tradeoff honestly, and build a plan around your actual kids —
-            nap schedules and all.
-          </p>
-
-          <Link
-            href="/plan"
-            className="inline-flex items-center gap-3 bg-coral hover:bg-coral-dark text-white font-semibold text-base px-8 py-4 rounded-xl transition-colors shadow-xl shadow-coral/30"
-          >
-            Plan our trip
-            <span>→</span>
-          </Link>
-
-          <p className="mt-5 text-sm text-white/45">
-            Free · No account needed · About 2 minutes
-          </p>
-        </div>
-
-        {/* Unsplash attribution — required by API guidelines */}
-        {heroPhoto && (
-          <div className="absolute bottom-4 right-5 z-10">
-            <p className="text-white/30 text-xs">
-              Photo by{" "}
-              <a
-                href={heroPhoto.photographerUrl}
-                className="hover:text-white/60 underline underline-offset-2 transition-colors"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {heroPhoto.photographer}
-              </a>
-              {" "}on{" "}
-              <a
-                href={heroPhoto.unsplashUrl}
-                className="hover:text-white/60 underline underline-offset-2 transition-colors"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Unsplash
-              </a>
-            </p>
-          </div>
-        )}
-      </section>
+      {/* Hero — rotating carousel, server-fetched photos */}
+      <HeroCarousel photos={heroPhotos} />
 
       {/* Our Call preview */}
       <section className="bg-white border-y border-cream-dark px-6 py-16">

@@ -1,5 +1,6 @@
 /**
- * Unsplash API utility — server-side only.
+ * Unsplash API utility — server-side only (used directly in Server Components
+ * and in API routes). Never import this in client components — use /api/photo instead.
  * Key lives in UNSPLASH_ACCESS_KEY (no NEXT_PUBLIC_ prefix — never sent to browser).
  *
  * API terms: photos must display photographer credit with utm links.
@@ -10,7 +11,6 @@ export interface UnsplashPhoto {
   url: string;            // images.unsplash.com CDN URL — safe to use as <img src>
   width: number;
   height: number;
-  blurHash?: string;
   photographer: string;
   photographerUrl: string; // includes utm params per Unsplash guidelines
   unsplashUrl: string;     // includes utm params per Unsplash guidelines
@@ -18,42 +18,51 @@ export interface UnsplashPhoto {
 }
 
 /**
- * Fetch a single landscape photo from Unsplash for a given query.
- * Returns null if the API key is missing or the request fails — callers should degrade gracefully.
+ * Fetch multiple landscape photos from Unsplash (up to 10).
+ * Returns empty array on failure — callers should degrade gracefully.
  */
-export async function getUnsplashPhoto(query: string): Promise<UnsplashPhoto | null> {
+export async function getUnsplashPhotos(query: string, count: number = 4): Promise<UnsplashPhoto[]> {
   const key = process.env.UNSPLASH_ACCESS_KEY;
-  if (!key) return null;
+  if (!key) return [];
 
   try {
     const res = await fetch(
-      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape&content_filter=high`,
+      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${Math.min(count, 10)}&orientation=landscape&content_filter=high`,
       {
         headers: { Authorization: `Client-ID ${key}` },
-        // Cache at Next.js data-cache level — Unsplash free tier is 50 req/hr,
-        // so caching for 24h keeps us well inside limits even under traffic.
+        // Cache 24h — keeps us well inside the 50 req/hr free tier limit.
         next: { revalidate: 86400 },
       }
     );
 
-    if (!res.ok) return null;
+    if (!res.ok) return [];
 
     const data = await res.json();
-    const photo = data.results?.[0];
-    if (!photo) return null;
+    const results = data.results ?? [];
 
-    return {
-      url: photo.urls.regular,  // 1080px wide, already quality-optimised
-      width: photo.width,
-      height: photo.height,
-      blurHash: photo.blur_hash,
-      altDescription: photo.alt_description,
-      photographer: photo.user.name,
-      // utm params required by Unsplash API guidelines
-      photographerUrl: `https://unsplash.com/@${photo.user.username}?utm_source=familytrip&utm_medium=referral`,
-      unsplashUrl: `https://unsplash.com?utm_source=familytrip&utm_medium=referral`,
-    };
+    return results.map((photo: Record<string, unknown>) => {
+      const user = photo.user as Record<string, string>;
+      const urls = photo.urls as Record<string, string>;
+      return {
+        url: urls.regular,   // 1080px wide, quality-optimised
+        width: photo.width as number,
+        height: photo.height as number,
+        altDescription: photo.alt_description as string | undefined,
+        photographer: user.name,
+        // utm params required by Unsplash API guidelines
+        photographerUrl: `https://unsplash.com/@${user.username}?utm_source=familytrip&utm_medium=referral`,
+        unsplashUrl: `https://unsplash.com?utm_source=familytrip&utm_medium=referral`,
+      } as UnsplashPhoto;
+    });
   } catch {
-    return null;
+    return [];
   }
+}
+
+/**
+ * Convenience wrapper — fetch a single photo. Returns null on failure.
+ */
+export async function getUnsplashPhoto(query: string): Promise<UnsplashPhoto | null> {
+  const photos = await getUnsplashPhotos(query, 1);
+  return photos[0] ?? null;
 }

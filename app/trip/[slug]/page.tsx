@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { loadTripInputs } from '@/lib/profile';
 import { TripInputs, Destination, ItineraryDay as ItineraryDayType, PackingCategory, RecommendationResponse } from '@/types';
@@ -19,6 +20,7 @@ export default function TripPage() {
   const [tripInputs, setTripInputs] = useState<TripInputs | null>(null);
   const [destination, setDestination] = useState<Destination | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('itinerary');
+  const [heroPhoto, setHeroPhoto] = useState<{ url: string; photographer: string; photographerUrl: string } | null>(null);
 
   const [itinerary, setItinerary] = useState<ItineraryDayType[] | null>(null);
   const [packingList, setPackingList] = useState<PackingCategory[] | null>(null);
@@ -43,6 +45,15 @@ export default function TripPage() {
       setDestination(dest);
     }
   }, [slug, router]);
+
+  // Fetch hero photo when destination is known
+  useEffect(() => {
+    if (!destination) return;
+    fetch(`/api/photo?q=${encodeURIComponent(destination.name + ' travel scenery')}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (data) setHeroPhoto(data); })
+      .catch(() => {});
+  }, [destination]);
 
   // Load sequentially — itinerary first, then packing — to avoid hammering the API simultaneously
   useEffect(() => {
@@ -119,13 +130,38 @@ export default function TripPage() {
   return (
     <div className="min-h-screen bg-cream">
       {/* Hero header */}
-      <div className={`bg-gradient-to-br ${destination.heroGradient} px-6 py-10`}>
-        <div className="max-w-2xl mx-auto">
+      <div className={`relative bg-gradient-to-br ${destination.heroGradient} overflow-hidden`}
+           style={{ minHeight: '160px' }}>
+        {/* Photo fades in over gradient when ready */}
+        {heroPhoto && (
+          <div className="absolute inset-0">
+            <Image
+              src={heroPhoto.url}
+              alt={destination.name}
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/35 to-black/60" />
+          </div>
+        )}
+        <div className="relative z-10 px-6 py-10 max-w-2xl mx-auto">
           <Link href="/results" className="text-white/60 text-sm hover:text-white transition-colors mb-5 inline-block">
             ← Back to options
           </Link>
           <h1 className="font-display text-3xl font-bold text-white mb-1">{destination.name}</h1>
           <p className="text-white/70 text-sm">{destination.tagline}</p>
+          {heroPhoto && (
+            <p className="mt-4 text-white/25 text-xs">
+              Photo:{' '}
+              <a href={heroPhoto.photographerUrl} target="_blank" rel="noopener noreferrer"
+                 className="hover:text-white/50 transition-colors underline">
+                {heroPhoto.photographer}
+              </a>
+              {' / Unsplash'}
+            </p>
+          )}
         </div>
       </div>
 

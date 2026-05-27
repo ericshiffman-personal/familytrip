@@ -1,7 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Destination } from '@/types';
+import { UnsplashPhoto } from '@/lib/unsplash';
 
 interface DestinationCardProps {
   destination: Destination;
@@ -24,6 +27,17 @@ export default function DestinationCard({
   onOverride,
   index,
 }: DestinationCardProps) {
+  const [photo, setPhoto] = useState<UnsplashPhoto | null>(null);
+
+  // Fetch a destination-specific photo on mount — silently falls back to gradient
+  useEffect(() => {
+    const query = `${destination.name} travel scenery`;
+    fetch(`/api/photo?q=${encodeURIComponent(query)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (data) setPhoto(data); })
+      .catch(() => {});
+  }, [destination.name]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -31,28 +45,63 @@ export default function DestinationCard({
       transition={{ delay: index * 0.15, duration: 0.4 }}
       className="card shadow-sm overflow-hidden"
     >
-      {/* Hero band */}
-      <div className={`bg-gradient-to-br ${destination.heroGradient} px-6 pt-8 pb-6 relative`}>
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex gap-2 flex-wrap">
-            <span className={`chip ${isPrimary ? 'bg-white/20 text-white' : 'bg-white/15 text-white/80'}`}>
-              {isPrimary ? 'Our Call' : 'The Alternative'}
-            </span>
-            {destination.confidence && (
-              <span className={`chip ${
-                destination.confidence === 'High'
-                  ? 'bg-white/20 text-white'
-                  : destination.confidence === 'Medium'
-                  ? 'bg-white/15 text-white/80'
-                  : 'bg-white/10 text-white/60'
-              }`}>
-                {destination.confidence === 'High' ? '●' : destination.confidence === 'Medium' ? '◐' : '○'} {destination.confidence} confidence
+      {/* Hero band — photo fades in over gradient when ready */}
+      <div className={`relative bg-gradient-to-br ${destination.heroGradient} overflow-hidden`}
+           style={{ minHeight: '160px' }}>
+        {/* Photo layer */}
+        {photo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={photo.url}
+              alt={photo.altDescription || destination.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 672px"
+            />
+            {/* Dark overlay so text stays readable over any photo */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/55" />
+          </motion.div>
+        )}
+
+        {/* Card header content — sits above photo/gradient */}
+        <div className="relative z-10 px-6 pt-8 pb-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex gap-2 flex-wrap">
+              <span className={`chip ${isPrimary ? 'bg-white/20 text-white' : 'bg-white/15 text-white/80'}`}>
+                {isPrimary ? 'Our Call' : 'The Alternative'}
               </span>
-            )}
+              {destination.confidence && (
+                <span className={`chip ${
+                  destination.confidence === 'High'
+                    ? 'bg-white/20 text-white'
+                    : destination.confidence === 'Medium'
+                    ? 'bg-white/15 text-white/80'
+                    : 'bg-white/10 text-white/60'
+                }`}>
+                  {destination.confidence === 'High' ? '●' : destination.confidence === 'Medium' ? '◐' : '○'} {destination.confidence} confidence
+                </span>
+              )}
+            </div>
           </div>
+          <h2 className="font-display text-3xl font-bold text-white mb-1">{destination.name}</h2>
+          <p className="text-white/75 text-sm">{destination.tagline}</p>
+
+          {/* Photo attribution — tiny, bottom-right of hero band */}
+          {photo && (
+            <p className="absolute bottom-2 right-3 text-white/25 text-xs">
+              <a href={photo.photographerUrl} target="_blank" rel="noopener noreferrer"
+                 className="hover:text-white/50 transition-colors">
+                {photo.photographer}
+              </a>
+              {' / Unsplash'}
+            </p>
+          )}
         </div>
-        <h2 className="font-display text-3xl font-bold text-white mb-1">{destination.name}</h2>
-        <p className="text-white/75 text-sm">{destination.tagline}</p>
       </div>
 
       <div className="p-6 space-y-5">
@@ -103,10 +152,12 @@ export default function DestinationCard({
         )}
 
         {/* Honest tradeoff */}
-        <div className="bg-cream-dark rounded-xl p-4">
-          <p className="text-xs font-bold text-ink-muted uppercase tracking-wide mb-1">What you give up</p>
-          <p className="text-sm text-ink-soft">{destination.honestTradeoff}</p>
-        </div>
+        {destination.honestTradeoff && (
+          <div className="bg-cream-dark rounded-xl p-4">
+            <p className="text-xs font-bold text-ink-muted uppercase tracking-wide mb-1">What you give up</p>
+            <p className="text-sm text-ink-soft">{destination.honestTradeoff}</p>
+          </div>
+        )}
 
         {/* When to ignore us */}
         {destination.whenToIgnore && (
@@ -124,10 +175,12 @@ export default function DestinationCard({
               <span className="font-semibold text-ink">{destination.flightTime}</span>
             </div>
           )}
-          <div className="bg-cream rounded-lg px-3 py-2 text-xs">
-            <span className="text-ink-muted">💰 </span>
-            <span className="font-semibold text-ink">{destination.budgetNote}</span>
-          </div>
+          {destination.budgetNote && (
+            <div className="bg-cream rounded-lg px-3 py-2 text-xs">
+              <span className="text-ink-muted">💰 </span>
+              <span className="font-semibold text-ink">{destination.budgetNote}</span>
+            </div>
+          )}
         </div>
 
         {/* Top activities */}
