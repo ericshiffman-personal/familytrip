@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       await request.json();
 
     const prompt = buildItineraryPrompt(tripInputs, destination);
-    const result = await callClaudeJSON<{ days: unknown[] }>(prompt, 2500);
+    const result = await callClaudeJSON<{ days: unknown[] }>(prompt, 3500);
 
     return NextResponse.json(result);
   } catch (error) {

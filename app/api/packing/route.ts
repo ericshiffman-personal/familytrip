@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       await request.json();
 
     const prompt = buildPackingPrompt(tripInputs, destination);
-    const result = await callClaudeJSON<{ categories: unknown[] }>(prompt, 2048);
+    const result = await callClaudeJSON<{ categories: unknown[] }>(prompt, 3500);
 
     return NextResponse.json(result);
   } catch (error) {

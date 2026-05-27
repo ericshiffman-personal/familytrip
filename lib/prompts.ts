@@ -105,7 +105,9 @@ CRITICAL RULES:
 - Recommend real, specific places/activities (not vague "visit the beach" — say which beach and why)
 - Account for actual kid energy levels and attention spans by age
 - Note when to loop back to the car for snacks or supplies if doing outdoor activities
-- Flag any activity with age recommendations
+- Keep each field to 1-2 sentences maximum — be specific but concise
+- Only include napNote if napRequired is true, otherwise omit the field entirely
+- tip should be one short practical sentence
 
 Respond with valid JSON only:
 {
@@ -143,7 +145,14 @@ Respond with valid JSON only:
   ]
 }
 
-Include these categories as relevant: Clothing, Kid Gear, Beach/Activity Gear, Documents & Money, Health & Safety, Entertainment (for transit), Snacks & Food, Tech & Accessories. Tailor items to the children's ages. For infants/toddlers, be especially specific about nap gear, feeding supplies, etc.`;
+STRICT RULES to keep the response concise:
+- Maximum 6 categories total
+- Maximum 8 items per category
+- Each item must be under 8 words — no long explanations
+- Only include what is genuinely specific to this family and destination
+- Do NOT include obvious universal items (toothbrush, phone charger, underwear)
+
+Categories to choose from (pick the 6 most relevant): Clothing, Kid Gear, Beach/Activity Gear, Documents & Money, Health & Safety, Transit Entertainment, Snacks & Food, Tech & Accessories. For infants/toddlers include nap gear and feeding supplies in Kid Gear.`;
 }
 
 export function buildConsolidatePrompt(pastedText: string, inputs: TripInputs, destination: Destination): string {
