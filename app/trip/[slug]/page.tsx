@@ -55,16 +55,28 @@ export default function TripPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destination, tripInputs]);
 
+  // Generic fetch helper with one automatic client-side retry
+  const fetchWithRetry = async (url: string, body: object): Promise<Response> => {
+    const opts = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    };
+    const res = await fetch(url, opts);
+    if (!res.ok) {
+      // Wait briefly then try once more
+      await new Promise((r) => setTimeout(r, 1200));
+      return fetch(url, opts);
+    }
+    return res;
+  };
+
   const loadItinerary = async () => {
     if (!destination || !tripInputs || itinerary) return;
     setItineraryLoading(true);
     setItineraryError(null);
     try {
-      const res = await fetch('/api/itinerary', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tripInputs, destination }),
-      });
+      const res = await fetchWithRetry('/api/itinerary', { tripInputs, destination });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to load itinerary');
       if (!data.days || !Array.isArray(data.days)) throw new Error('Invalid itinerary format returned');
@@ -81,11 +93,7 @@ export default function TripPage() {
     setPackingLoading(true);
     setPackingError(null);
     try {
-      const res = await fetch('/api/packing', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tripInputs, destination }),
-      });
+      const res = await fetchWithRetry('/api/packing', { tripInputs, destination });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to load packing list');
       if (!data.categories || !Array.isArray(data.categories)) throw new Error('Invalid packing list format returned');

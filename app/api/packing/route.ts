@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { callClaudeJSON, logUsage } from '@/lib/claude';
+import { callClaudeJSONWithRetry, logUsage } from '@/lib/claude';
 import { buildPackingPrompt } from '@/lib/prompts';
 import { TripInputs, Destination } from '@/types';
 
@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
       await request.json();
 
     const prompt = buildPackingPrompt(tripInputs, destination);
-    // 4000 tokens — raised from 3500 for headroom.
-    const { result, usage } = await callClaudeJSON<{ categories: unknown[] }>(prompt, 4000);
+    // 4000 tokens. Auto-retries once at 6000 if first attempt fails.
+    const { result, usage } = await callClaudeJSONWithRetry<{ categories: unknown[] }>(prompt, 4000, 'packing');
     logUsage('packing', usage);
 
     return NextResponse.json(result);

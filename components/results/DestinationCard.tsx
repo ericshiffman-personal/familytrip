@@ -66,20 +66,22 @@ export default function DestinationCard({
         )}
 
         {/* Why it works — parent logic */}
-        <div>
-          <p className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-2">Why it works for your family</p>
-          <ul className="space-y-1.5">
-            {destination.whyItWorks.map((reason, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-ink-soft">
-                <span className="text-coral mt-0.5 flex-shrink-0 font-bold">✓</span>
-                <span>{reason}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {Array.isArray(destination.whyItWorks) && destination.whyItWorks.length > 0 && (
+          <div>
+            <p className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-2">Why it works for your family</p>
+            <ul className="space-y-1.5">
+              {destination.whyItWorks.map((reason, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-ink-soft">
+                  <span className="text-coral mt-0.5 flex-shrink-0 font-bold">✓</span>
+                  <span>{reason}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Tradeoff chips */}
-        {destination.tradeoffChips && destination.tradeoffChips.length > 0 && (
+        {Array.isArray(destination.tradeoffChips) && destination.tradeoffChips.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {destination.tradeoffChips.map((chip) => (
               <span
@@ -129,14 +131,16 @@ export default function DestinationCard({
         </div>
 
         {/* Top activities */}
-        <div>
-          <p className="text-xs font-bold text-ink-muted uppercase tracking-wide mb-2">Top activities</p>
-          <div className="flex flex-wrap gap-2">
-            {destination.topActivities.map((a) => (
-              <span key={a} className="chip bg-navy-light text-navy">{a}</span>
-            ))}
+        {Array.isArray(destination.topActivities) && destination.topActivities.length > 0 && (
+          <div>
+            <p className="text-xs font-bold text-ink-muted uppercase tracking-wide mb-2">Top activities</p>
+            <div className="flex flex-wrap gap-2">
+              {destination.topActivities.map((a) => (
+                <span key={a} className="chip bg-navy-light text-navy">{a}</span>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* CTA */}
         <motion.button
