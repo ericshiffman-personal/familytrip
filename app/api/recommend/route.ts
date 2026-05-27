@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { callClaudeJSON } from '@/lib/claude';
+import { callClaudeJSON, logUsage } from '@/lib/claude';
 import { buildRecommendationPrompt } from '@/lib/prompts';
 import { TripInputs, RecommendationResponse } from '@/types';
 
@@ -14,14 +14,13 @@ export async function POST(request: NextRequest) {
     }
 
     const prompt = buildRecommendationPrompt(inputs);
-    const result = await callClaudeJSON<RecommendationResponse>(prompt, 2048);
+    const { result, usage } = await callClaudeJSON<RecommendationResponse>(prompt, 2048);
+    logUsage('recommend', usage);
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Recommendation error:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate recommendations. Please try again.' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Recommendation error:', message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
