@@ -15,7 +15,9 @@ export async function POST(request: NextRequest) {
     }
 
     const prompt = buildRecommendationPrompt(inputs, overrideNote);
-    const { result, usage } = await callClaudeJSON<RecommendationResponse>(prompt, 2048);
+    // 4000 tokens — the "Our Call" format has ~30 fields across two destinations.
+    // 2048 was too low and caused truncation mid-JSON (position ~5000–5700 chars).
+    const { result, usage } = await callClaudeJSON<RecommendationResponse>(prompt, 4000);
     logUsage('recommend', usage);
 
     return NextResponse.json(result);

@@ -18,7 +18,8 @@ export async function POST(request: NextRequest) {
     }
 
     const prompt = buildConsolidatePrompt(pastedText, tripInputs, destination);
-    const { result, usage } = await callClaudeJSON<unknown>(prompt, 2048);
+    // 3000 tokens — raised from 2048.
+    const { result, usage } = await callClaudeJSON<unknown>(prompt, 3000);
     logUsage('consolidate', usage);
 
     return NextResponse.json(result);

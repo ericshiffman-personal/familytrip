@@ -11,7 +11,8 @@ export async function POST(request: NextRequest) {
       await request.json();
 
     const prompt = buildItineraryPrompt(tripInputs, destination);
-    const { result, usage } = await callClaudeJSON<{ days: unknown[] }>(prompt, 3500);
+    // 5000 tokens — 5-day itinerary with 5 fields per day; raised from 3500 for headroom.
+    const { result, usage } = await callClaudeJSON<{ days: unknown[] }>(prompt, 5000);
     logUsage('itinerary', usage);
 
     return NextResponse.json(result);

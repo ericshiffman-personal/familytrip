@@ -44,6 +44,15 @@ export async function callClaude(
     throw new Error('Unexpected response type from Claude');
   }
 
+  // Detect truncation early — stop_reason 'max_tokens' means the response was
+  // cut off at the limit. This produces broken JSON and a cryptic SyntaxError
+  // downstream. Throwing here gives a clear error message instead.
+  if (message.stop_reason === 'max_tokens') {
+    const tokenInfo = `(limit was ${maxTokens}, output was ${message.usage.output_tokens} tokens)`;
+    console.error(`[claude] Response truncated ${tokenInfo} — raise maxTokens for this route`);
+    throw new Error(`Claude response was cut off before finishing ${tokenInfo}. Please try again.`);
+  }
+
   const usage: UsageInfo = {
     inputTokens: message.usage.input_tokens,
     outputTokens: message.usage.output_tokens,
@@ -61,8 +70,14 @@ export async function callClaudeJSON<T>(
 
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
+    console.error('[claude] No JSON found in response. Raw response (first 500 chars):', text.slice(0, 500));
     throw new Error(`No JSON found in Claude response. Response was: ${text.slice(0, 200)}`);
   }
 
-  return { result: JSON.parse(jsonMatch[0]) as T, usage };
+  try {
+    return { result: JSON.parse(jsonMatch[0]) as T, usage };
+  } catch (err) {
+    console.error('[claude] JSON.parse failed. Raw JSON (first 1000 chars):', jsonMatch[0].slice(0, 1000));
+    throw err;
+  }
 }

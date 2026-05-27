@@ -11,7 +11,8 @@ export async function POST(request: NextRequest) {
       await request.json();
 
     const prompt = buildPackingPrompt(tripInputs, destination);
-    const { result, usage } = await callClaudeJSON<{ categories: unknown[] }>(prompt, 3500);
+    // 4000 tokens — raised from 3500 for headroom.
+    const { result, usage } = await callClaudeJSON<{ categories: unknown[] }>(prompt, 4000);
     logUsage('packing', usage);
 
     return NextResponse.json(result);
