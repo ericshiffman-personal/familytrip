@@ -28,6 +28,19 @@ export default function ResultsPage() {
     const inputs = loadTripInputs();
     if (!inputs) { router.push('/plan'); return; }
     setTripInputs(inputs);
+
+    // Restore cached recommendations if we're navigating back — avoids
+    // re-calling the API when the user returns from the trip page.
+    const cached = sessionStorage.getItem('familytrip_recommendations');
+    if (cached) {
+      try {
+        setRecommendations(JSON.parse(cached));
+        return;
+      } catch {
+        // Corrupt cache — fall through and fetch fresh
+      }
+    }
+
     fetchRecommendations(inputs);
   }, [router]);
 
