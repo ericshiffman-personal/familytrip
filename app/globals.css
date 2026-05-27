@@ -1,68 +1,90 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 @theme {
-  --color-coral: #E8715A;
-  --color-coral-light: #FDECEA;
-  --color-coral-dark: #C4503B;
-  --color-ocean: #4A8FA8;
-  --color-ocean-light: #E8F4F8;
-  --color-ocean-dark: #2D6E85;
-  --color-sand: #F9F5EF;
-  --color-sand-dark: #EDE8DF;
-  --color-deep: #1A1A2E;
-  --color-mist: #E8EDF2;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Brand colors — "calm confidence, not kid chaos" */
+  --color-coral: #D95F3B;
+  --color-coral-light: #FDF0EB;
+  --color-coral-dark: #B84A2A;
+
+  --color-navy: #1B2E4B;
+  --color-navy-light: #EEF2F7;
+  --color-navy-mid: #2D4A6E;
+
+  --color-cream: #FAF7F2;
+  --color-cream-dark: #F0EBE1;
+  --color-stone: #D6CFC4;
+
+  --color-sage: #7A9E87;
+  --color-sage-light: #EEF4F0;
+
+  --color-ink: #1A1A1A;
+  --color-ink-soft: #4A4A4A;
+  --color-ink-muted: #7A7A7A;
+
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  /* Confidence colors */
+  --color-confidence-high: #2D6A4F;
+  --color-confidence-high-bg: #EAF4EE;
+  --color-confidence-mid: #B45309;
+  --color-confidence-mid-bg: #FEF3C7;
+  --color-confidence-low: #7A7A7A;
+  --color-confidence-low-bg: #F3F3F3;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background-color: var(--color-sand);
-  color: var(--color-deep);
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Card hover lift */
+/* Display headings use the editorial serif */
+h1, h2, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Card elevation system */
+.card {
+  background: white;
+  border-radius: 1.25rem;
+  border: 1px solid var(--color-cream-dark);
+}
 .card-lift {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(26, 26, 46, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(27, 46, 75, 0.10);
 }
 
-/* Smooth page transitions */
+/* Page transitions */
 .page-enter {
-  animation: fadeSlideUp 0.4s ease forwards;
+  animation: fadeSlideUp 0.35s ease forwards;
 }
-
 @keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Vibe card selected state */
-.vibe-card-selected {
-  outline: 3px solid var(--color-coral);
-  outline-offset: 2px;
+/* Chip / badge base */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  letter-spacing: 0.01em;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-sand);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-sand-dark);
-  border-radius: 3px;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--color-cream); }
+::-webkit-scrollbar-thumb { background: var(--color-stone); border-radius: 3px; }

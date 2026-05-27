@@ -25,13 +25,24 @@ export interface TripInputs {
   previousBadExperience?: string;
 }
 
+export interface TradeoffChip {
+  label: string;
+  type: 'positive' | 'negative' | 'neutral';
+}
+
 export interface Destination {
   name: string;
   tagline: string;
-  heroEmoji: string;
   heroGradient: string;
+  // "Our Call" fields
+  theCall: string;
   whyItWorks: string[];
+  tradeoffChips: TradeoffChip[];
+  hiddenCatch: string;
   honestTradeoff: string;
+  whenToIgnore: string;
+  confidence: 'High' | 'Medium' | 'Low';
+  // Meta
   bestFor: string;
   flightTime?: string;
   budgetNote: string;
@@ -42,7 +53,7 @@ export interface Destination {
 export interface RecommendationResponse {
   primary: Destination;
   alternative: Destination;
-  personalizedIntro: string;
+  ourCallSummary: string;
 }
 
 export interface ItineraryDay {

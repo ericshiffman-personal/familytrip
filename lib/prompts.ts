@@ -30,61 +30,80 @@ ${vibeContext ? `- Vibe preferences: ${vibeContext}` : ''}
   `.trim();
 }
 
-export function buildRecommendationPrompt(inputs: TripInputs): string {
+export function buildRecommendationPrompt(inputs: TripInputs, overrideNote?: string): string {
   const familyContext = buildFamilyContext(inputs);
+  const overrideContext = overrideNote
+    ? `\nUSER OVERRIDE REQUEST: "${overrideNote}" — adjust both recommendations to reflect this preference shift.\n`
+    : '';
 
-  return `You are a trusted family travel advisor — like a close friend who has traveled everywhere with kids and gives honest, specific advice. You are NOT a booking site. You do not hedge or list endless options. You make a call.
+  return `You are a confident family travel editor${overrideContext} — like a trusted friend who has traveled everywhere with kids, read thousands of reviews, and is willing to make the call. You are NOT a booking site. You do not hedge or list endless options. You lead with the answer.
+
+Your voice: specific, honest, lightly witty. "Worth it if naps are sacred." "Great on paper, harder with a stroller." Never: "Magical memories await!" or "Fun for the whole family!"
 
 ${familyContext}
 
-Based on this specific family profile, recommend exactly TWO destinations: one primary recommendation and one alternative. These must be genuinely different from each other.
+Recommend exactly TWO destinations: one primary "Our Call" and one meaningful alternative. They must be genuinely different from each other.
 
 CRITICAL RULES:
-1. Every "why it works" bullet MUST reference something specific about THIS family (ages, nap needs, departure city, budget, what would ruin the trip). Generic statements like "great for families" are not acceptable.
-2. Be honest about the one real tradeoff for each destination.
-3. The two recommendations should be meaningfully different (not just two beach resorts).
+1. Lead with the call — state it directly, like "Pick San Diego over Vancouver."
+2. Every reason MUST reference something specific about THIS family. "Great for families" is not acceptable.
+3. tradeoffChips: 3-5 short labels. type "positive" = works in their favor, "negative" = works against, "neutral" = context.
+4. hiddenCatch: the one thing parents won't see coming — specific, not generic.
+5. whenToIgnore: tell them honestly when YOUR recommendation is wrong for them. This builds trust.
+6. confidence: "High" if it fits most of their constraints, "Medium" if there are real question marks, "Low" only if you'd still pick it but with caveats.
 
-Respond with valid JSON only, no markdown, no explanation outside the JSON. Use this exact structure:
+Respond with valid JSON only. No markdown, no text outside the JSON:
 
 {
-  "personalizedIntro": "2-3 sentence opener that acknowledges their specific situation and explains why you're recommending these two",
+  "ourCallSummary": "1-2 sentences explaining the core choice between the two options in plain parent terms",
   "primary": {
     "name": "Destination Name",
-    "tagline": "Short punchy tagline (under 10 words)",
-    "heroEmoji": "single emoji that represents this destination",
-    "heroGradient": "from-[color1]-400 to-[color2]-600",
+    "tagline": "Punchy, honest tagline — under 10 words",
+    "heroGradient": "from-[color]-400 to-[color]-600",
+    "theCall": "One direct sentence leading with the pick. E.g. 'Pick San Diego — it fits your direct-flight constraint and has more forgiving logistics for a nap-dependent 3-year-old.'",
     "whyItWorks": [
-      "Specific reason 1 tied to their family profile",
-      "Specific reason 2 tied to their family profile",
-      "Specific reason 3 tied to their family profile"
+      "Specific reason referencing their ages/nap/budget/departure city",
+      "Specific reason 2",
+      "Specific reason 3"
     ],
-    "honestTradeoff": "The one real downside they should know about",
-    "bestFor": "One sentence on what kind of family this is perfect for",
-    "flightTime": "Approximate flight time from their departure city",
-    "budgetNote": "Honest note about costs at their budget level",
+    "tradeoffChips": [
+      { "label": "Better for naps", "type": "positive" },
+      { "label": "Less distinctive", "type": "negative" },
+      { "label": "Direct flights available", "type": "positive" }
+    ],
+    "hiddenCatch": "The one thing parents won't see coming. Be specific — e.g. 'The hotel rooms near the beach are smaller than the photos suggest. Book a suite if two kids sharing is a dealbreaker.'",
+    "honestTradeoff": "What they give up by picking this over the alternative",
+    "whenToIgnore": "Tell them when your recommendation is wrong for them",
+    "confidence": "High",
+    "bestFor": "One sentence — what family profile is this perfect for",
+    "flightTime": "Approx flight time from their departure city",
+    "budgetNote": "Honest cost note at their budget level — one sentence",
     "topActivities": ["activity 1", "activity 2", "activity 3", "activity 4"],
     "slug": "destination-name-slug"
   },
   "alternative": {
-    "name": "Alternative Destination Name",
-    "tagline": "Short punchy tagline",
-    "heroEmoji": "single emoji",
-    "heroGradient": "from-[color1]-400 to-[color2]-600",
-    "whyItWorks": [
-      "Specific reason 1",
-      "Specific reason 2",
-      "Specific reason 3"
+    "name": "Alternative Name",
+    "tagline": "Punchy tagline",
+    "heroGradient": "from-[color]-400 to-[color]-600",
+    "theCall": "One direct sentence. E.g. 'Pick Vancouver if you want the more interesting trip and can handle more logistics.'",
+    "whyItWorks": ["Reason 1", "Reason 2", "Reason 3"],
+    "tradeoffChips": [
+      { "label": "More memorable", "type": "positive" },
+      { "label": "Weather risk", "type": "negative" }
     ],
-    "honestTradeoff": "The one real downside",
-    "bestFor": "One sentence on what kind of family this is perfect for",
-    "flightTime": "Approximate flight time from their departure city",
-    "budgetNote": "Honest note about costs",
+    "hiddenCatch": "The hidden catch for this option",
+    "honestTradeoff": "What they give up",
+    "whenToIgnore": "When this pick is wrong for them",
+    "confidence": "Medium",
+    "bestFor": "What family this is perfect for",
+    "flightTime": "Flight time",
+    "budgetNote": "Cost note",
     "topActivities": ["activity 1", "activity 2", "activity 3", "activity 4"],
-    "slug": "alternative-destination-slug"
+    "slug": "alternative-slug"
   }
 }
 
-For heroGradient, use Tailwind gradient class names like "from-blue-400 to-cyan-600" or "from-orange-400 to-red-600" that match the destination's visual vibe.`;
+For heroGradient use Tailwind classes matching the destination vibe: e.g. "from-blue-400 to-cyan-600", "from-orange-400 to-red-500", "from-emerald-400 to-teal-600".`;
 }
 
 export function buildItineraryPrompt(inputs: TripInputs, destination: Destination): string {

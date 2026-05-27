@@ -7,13 +7,14 @@ export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
-    const inputs: TripInputs = await request.json();
+    const body = await request.json();
+    const { overrideNote, ...inputs } = body as TripInputs & { overrideNote?: string };
 
     if (!inputs.dealBreakers || !inputs.departureCity) {
       return NextResponse.json({ error: 'Missing required trip inputs' }, { status: 400 });
     }
 
-    const prompt = buildRecommendationPrompt(inputs);
+    const prompt = buildRecommendationPrompt(inputs, overrideNote);
     const { result, usage } = await callClaudeJSON<RecommendationResponse>(prompt, 2048);
     logUsage('recommend', usage);
 

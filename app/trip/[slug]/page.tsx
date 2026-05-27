@@ -118,12 +118,9 @@ export default function TripPage() {
           <Link href="/results" className="text-white/60 text-sm hover:text-white transition-colors mb-4 inline-block">
             ← Back to options
           </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-5xl">{destination.heroEmoji}</span>
-            <div>
-              <h1 className="text-2xl font-bold text-white">{destination.name}</h1>
-              <p className="text-white/70 text-sm">{destination.tagline}</p>
-            </div>
+          <div>
+            <h1 className="font-display text-3xl font-bold text-white mb-1">{destination.name}</h1>
+            <p className="text-white/70 text-sm">{destination.tagline}</p>
           </div>
         </div>
       </div>
