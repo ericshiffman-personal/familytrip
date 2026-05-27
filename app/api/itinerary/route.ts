@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Itinerary error:', error);
-    return NextResponse.json({ error: 'Failed to generate itinerary' }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Itinerary error:', message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
