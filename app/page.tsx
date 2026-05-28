@@ -1,21 +1,31 @@
 import Link from "next/link";
-import { getUnsplashPhotos } from "@/lib/unsplash";
-import HeroCarousel from "@/components/shared/HeroCarousel";
+import Image from "next/image";
+import { getUnsplashPhoto } from "@/lib/unsplash";
+import type { UnsplashPhoto } from "@/lib/unsplash";
 
-// Homepage is a Server Component — photos fetched server-side and cached 24h.
-// If UNSPLASH_ACCESS_KEY is not set, HeroCarousel falls back to the navy gradient.
+// Vacation style photos — fetched server-side, cached 24h.
+// Four distinct trip archetypes to spark the right mental image.
+const VACATION_STYLES: { query: string; label: string }[] = [
+  { query: 'tropical beach turquoise water vacation',   label: 'Beach & sun'         },
+  { query: 'mountain forest hiking scenic landscape',   label: 'Mountains & trails'  },
+  { query: 'europe city cobblestone travel architecture', label: 'City & culture'    },
+  { query: 'resort swimming pool tropical luxury',      label: 'Resort & relax'      },
+];
+
 export default async function Home() {
-  // Fetch 5 varied travel photos for the rotating carousel.
-  // Separate queries give more variety than one broad query.
-  const heroPhotos = await getUnsplashPhotos(
-    'tropical beach family vacation travel scenic landscape',
-    5
-  );
+  // Fetch in parallel — all 4 are independent, each cached 24h
+  const inspirationPhotos: { photo: UnsplashPhoto | null; label: string }[] =
+    await Promise.all(
+      VACATION_STYLES.map(async ({ query, label }) => ({
+        photo: await getUnsplashPhoto(query),
+        label,
+      }))
+    );
 
   return (
     <main className="flex flex-col min-h-screen bg-cream">
 
-      {/* Nav */}
+      {/* ── Nav ────────────────────────────────────────────────────── */}
       <nav className="px-6 py-4 flex items-center justify-between border-b border-cream-dark bg-white sticky top-0 z-50">
         <span className="font-display text-xl font-bold text-navy tracking-tight">
           family<span className="text-coral">trip</span>
@@ -25,17 +35,87 @@ export default async function Home() {
         </Link>
       </nav>
 
-      {/* Hero — rotating carousel, server-fetched photos */}
-      <HeroCarousel photos={heroPhotos} />
+      {/* ── Hero — clean, text on white ────────────────────────────── */}
+      <section className="bg-white px-6 pt-20 pb-16 border-b border-cream-dark">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-xs font-semibold text-coral uppercase tracking-widest mb-5">
+            For families with 47 TripAdvisor tabs open
+          </p>
+          <h1 className="font-display text-5xl md:text-6xl font-bold text-navy mb-6 leading-tight">
+            Stop the spiral.
+          </h1>
+          <p className="text-ink-soft text-lg mb-10 max-w-md mx-auto leading-relaxed">
+            Tell us about your family. We&apos;ll give you a confident recommendation,
+            explain every tradeoff honestly, and build a plan around your actual kids —
+            nap schedules and all.
+          </p>
+          <Link
+            href="/plan"
+            className="inline-flex items-center gap-2 bg-coral hover:bg-coral-dark text-white font-semibold text-base px-8 py-4 rounded-xl transition-colors shadow-lg shadow-coral/20"
+          >
+            Plan our trip — it&apos;s free →
+          </Link>
+          <p className="mt-5 text-sm text-ink-muted">No account needed · About 2 minutes</p>
+        </div>
+      </section>
 
-      {/* Our Call preview */}
+      {/* ── Photo inspiration grid — photos breathe on their own ─────── */}
+      <section className="bg-cream px-6 py-12">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs font-semibold text-ink-muted uppercase tracking-widest mb-6 text-center">
+            Where will you go?
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            {inspirationPhotos.map(({ photo, label }) => (
+              <div key={label} className="group">
+                {/* Photo card — aspect-ratio portrait, no text on top */}
+                <div
+                  className="relative rounded-2xl overflow-hidden bg-navy-light"
+                  style={{ aspectRatio: '3 / 4' }}
+                >
+                  {photo ? (
+                    <>
+                      <Image
+                        src={photo.url}
+                        alt={label}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="(max-width: 768px) 45vw, 240px"
+                      />
+                      {/* Bottom-fade for attribution readability */}
+                      <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+                      <p className="absolute bottom-2 right-2 text-white/35 text-[10px] leading-none pointer-events-auto">
+                        <a
+                          href={photo.photographerUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-white/60 transition-colors"
+                        >
+                          {photo.photographer}
+                        </a>
+                        {' / Unsplash'}
+                      </p>
+                    </>
+                  ) : (
+                    /* Gradient placeholder when Unsplash key isn't set */
+                    <div className="w-full h-full bg-gradient-to-br from-navy to-navy-mid" />
+                  )}
+                </div>
+                {/* Label sits below the photo — never on top */}
+                <p className="text-xs text-ink-soft font-medium mt-2.5 text-center">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── "Our Call" preview ─────────────────────────────────────── */}
       <section className="bg-white border-y border-cream-dark px-6 py-16">
         <div className="max-w-2xl mx-auto">
           <p className="text-xs font-semibold text-ink-muted uppercase tracking-widest mb-6 text-center">
             What you actually get
           </p>
 
-          {/* Sample "Our Call" card */}
           <div className="card p-6 md:p-8 shadow-sm">
             <div className="flex items-center gap-2 mb-5">
               <span className="chip bg-navy text-white">Our Call</span>
@@ -89,7 +169,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* ── How it works ───────────────────────────────────────────── */}
       <section className="px-6 py-20 bg-cream">
         <div className="max-w-4xl mx-auto">
           <h2 className="font-display text-3xl font-bold text-navy text-center mb-3">
@@ -129,7 +209,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Parent Math strip */}
+      {/* ── Parent Math strip ──────────────────────────────────────── */}
       <section className="bg-navy px-6 py-12">
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-xs font-semibold text-coral uppercase tracking-widest mb-4">
@@ -142,7 +222,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── CTA ────────────────────────────────────────────────────── */}
       <section className="bg-coral px-6 py-20 text-center">
         <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
           Ready to stop researching?
@@ -158,7 +238,7 @@ export default async function Home() {
         </Link>
       </section>
 
-      {/* Footer */}
+      {/* ── Footer ─────────────────────────────────────────────────── */}
       <footer className="bg-navy px-6 py-8 text-center">
         <p className="text-white/30 text-sm">
           family<span className="text-coral/60">trip</span> · Opinionated travel planning for real families
