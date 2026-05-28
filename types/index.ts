@@ -3,6 +3,16 @@ export interface Child {
   nickname?: string;
 }
 
+export interface NapWindow {
+  approxTime: string;   // e.g. "9:00–10:30am"
+  strollerOk: boolean;  // true = stroller/carrier nap works; false = needs crib
+}
+
+export interface NapDetails {
+  count: 1 | 2;         // single or double napper
+  naps: NapWindow[];    // one entry per nap
+}
+
 export interface VibeSelections {
   environment?: 'beach' | 'mountains';
   pace?: 'relaxed' | 'adventure';
@@ -16,7 +26,8 @@ export interface TripInputs {
   adults: number;
   children: Child[];
   napRequired: boolean;
-  napSchedule?: string;
+  napSchedule?: string;   // simple time string for older nappers (3–5)
+  napDetails?: NapDetails; // structured detail for infants/toddlers (≤2)
   duration: '3-4 days' | '5-7 days' | '8-10 days' | '10+ days';
   budget: 'budget' | 'comfortable' | 'splurge';
   departureCity: string;

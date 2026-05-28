@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TripInputs, Child, Destination } from '@/types';
+import { TripInputs, Child, Destination, NapDetails } from '@/types';
 import { loadProfile, saveTripInputs } from '@/lib/profile';
+import NapSection from '@/components/intake/NapSection';
 
 function toSlug(name: string): string {
   return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -38,7 +39,9 @@ export default function GoPage() {
   const [children, setChildren] = useState<Child[]>([]);
   const [napRequired, setNapRequired] = useState(false);
   const [napSchedule, setNapSchedule] = useState('');
+  const [napDetails, setNapDetails] = useState<NapDetails | undefined>(undefined);
   const [departureCity, setDepartureCity] = useState('');
+  const [dealBreakers, setDealBreakers] = useState('');
   const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
@@ -48,11 +51,13 @@ export default function GoPage() {
       setChildren(profile.children);
       setNapRequired(profile.napRequired);
       setNapSchedule(profile.napSchedule || '');
+      // napDetails not currently stored in profile — user fills in fresh each session
       setProfileLoaded(true);
     }
   }, []);
 
   const hasYoungChild = children.some((c) => c.age <= 5);
+  const hasInfant     = children.some((c) => c.age <= 2);
   const canSubmit = destinationName.trim().length >= 2 && departureCity.trim().length >= 2;
 
   const addChild = () => setChildren([...children, { age: 4 }]);
@@ -95,12 +100,13 @@ export default function GoPage() {
       children,
       napRequired,
       napSchedule,
+      napDetails,
       duration,
       budget: 'comfortable',
       departureCity,
       travelMethod: 'either',
       travelMonth: travelMonth || undefined,
-      dealBreakers: '',
+      dealBreakers,
     };
 
     saveTripInputs(inputs);
@@ -312,46 +318,18 @@ export default function GoPage() {
 
           {/* Nap schedule — shown if any child is 5 or under */}
           {(hasYoungChild || napRequired) && (
-            <div className="bg-navy-light rounded-2xl p-5 border border-navy/10 mb-4">
-              <div className="flex items-start gap-3 mb-4">
-                <span className="text-xl">😴</span>
-                <div>
-                  <p className="font-semibold text-navy text-sm">Nap schedule check</p>
-                  <p className="text-ink-soft text-xs mt-0.5">Does anyone still need a regular nap?</p>
-                </div>
-              </div>
-              <div className="flex gap-3 mb-4">
-                {[
-                  { label: 'Yes, naps are non-negotiable', value: true },
-                  { label: "Nah, we're flexible", value: false },
-                ].map((opt) => (
-                  <button
-                    key={String(opt.value)}
-                    onClick={() => setNapRequired(opt.value)}
-                    className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-medium border-2 transition-all ${
-                      napRequired === opt.value
-                        ? 'border-navy bg-navy text-white'
-                        : 'border-cream-dark bg-white text-ink hover:border-navy/40'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-              {napRequired && (
-                <div>
-                  <label className="text-xs font-medium text-ink-muted mb-1.5 block">
-                    Typical nap window (optional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 1:00pm – 3:00pm"
-                    value={napSchedule}
-                    onChange={(e) => setNapSchedule(e.target.value)}
-                    className="w-full bg-white border border-cream-dark rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-navy placeholder-ink-muted"
-                  />
-                </div>
-              )}
+            <div className="mb-4">
+              <NapSection
+                napRequired={napRequired}
+                napSchedule={napSchedule}
+                napDetails={napDetails}
+                hasInfant={hasInfant}
+                onChange={(required, schedule, details) => {
+                  setNapRequired(required);
+                  setNapSchedule(schedule || '');
+                  setNapDetails(details);
+                }}
+              />
             </div>
           )}
 
@@ -368,6 +346,23 @@ export default function GoPage() {
               className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors"
             />
           </div>
+        </div>
+
+        {/* Deal-breakers */}
+        <div>
+          <label className="block text-sm font-semibold text-navy mb-1">
+            What would ruin this trip? <span className="text-ink-muted font-normal">(optional)</span>
+          </label>
+          <textarea
+            rows={2}
+            placeholder="e.g. Being stuck at a resort with nothing to do. Long drives between activities."
+            value={dealBreakers}
+            onChange={(e) => setDealBreakers(e.target.value)}
+            className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors resize-none"
+          />
+          <p className="text-xs text-ink-muted mt-1.5">
+            Helps us build an itinerary that avoids your specific frustrations.
+          </p>
         </div>
 
         {/* Submit */}

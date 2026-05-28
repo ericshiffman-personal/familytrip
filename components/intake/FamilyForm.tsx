@@ -1,15 +1,17 @@
 'use client';
 
-import { Child } from '@/types';
+import { Child, NapDetails } from '@/types';
+import NapSection from './NapSection';
 
 interface FamilyFormProps {
   adults: number;
   children: Child[];
   napRequired: boolean;
   napSchedule: string;
+  napDetails?: NapDetails;
   onAdultsChange: (n: number) => void;
   onChildrenChange: (children: Child[]) => void;
-  onNapChange: (required: boolean, schedule?: string) => void;
+  onNapChange: (required: boolean, schedule?: string, napDetails?: NapDetails) => void;
 }
 
 export default function FamilyForm({
@@ -17,11 +19,13 @@ export default function FamilyForm({
   children,
   napRequired,
   napSchedule,
+  napDetails,
   onAdultsChange,
   onChildrenChange,
   onNapChange,
 }: FamilyFormProps) {
   const hasToddler = children.some((c) => c.age <= 5);
+  const hasInfant  = children.some((c) => c.age <= 2);
 
   const addChild = () => {
     onChildrenChange([...children, { age: 3 }]);
@@ -120,53 +124,15 @@ export default function FamilyForm({
         )}
       </div>
 
-      {/* Nap schedule — only show if toddler detected */}
+      {/* Nap schedule — show for any child 5 or under */}
       {(hasToddler || napRequired) && (
-        <div className="bg-navy-light rounded-2xl p-6 border border-navy/10">
-          <div className="flex items-start gap-3 mb-4">
-            <span className="text-xl">😴</span>
-            <div>
-              <p className="font-semibold text-navy text-sm">Nap schedule check</p>
-              <p className="text-ink-soft text-xs mt-0.5">
-                We noticed you have a little one. Does anyone still need a regular nap?
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-3 mb-4">
-            {[
-              { label: 'Yes, naps are non-negotiable', value: true },
-              { label: "Nah, we're flexible", value: false },
-            ].map((opt) => (
-              <button
-                key={String(opt.value)}
-                onClick={() => onNapChange(opt.value)}
-                className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-medium border-2 transition-all ${
-                  napRequired === opt.value
-                    ? 'border-navy bg-navy text-white'
-                    : 'border-cream-dark bg-white text-ink hover:border-navy/40'
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
-          {napRequired && (
-            <div>
-              <label className="text-xs font-medium text-ink-muted mb-1.5 block">
-                Typical nap window (optional — helps us plan the itinerary)
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. 1:00pm – 3:00pm"
-                value={napSchedule}
-                onChange={(e) => onNapChange(true, e.target.value)}
-                className="w-full bg-white border border-cream-dark rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-navy placeholder-ink-muted"
-              />
-            </div>
-          )}
-        </div>
+        <NapSection
+          napRequired={napRequired}
+          napSchedule={napSchedule}
+          napDetails={napDetails}
+          hasInfant={hasInfant}
+          onChange={onNapChange}
+        />
       )}
     </div>
   );

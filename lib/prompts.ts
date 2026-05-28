@@ -2,12 +2,24 @@ import { TripInputs, Destination } from '@/types';
 import { getChildrenSummary } from './profile';
 
 function buildFamilyContext(inputs: TripInputs): string {
-  const { adults, children, napRequired, napSchedule, vibes, duration, budget, departureCity, travelMethod, travelMonth, dealBreakers } = inputs;
+  const { adults, children, napRequired, napSchedule, napDetails, vibes, duration, budget, departureCity, travelMethod, travelMonth, dealBreakers } = inputs;
 
   const childrenSummary = getChildrenSummary(children);
-  const napContext = napRequired
-    ? `One or more children still require naps${napSchedule ? ` (typically ${napSchedule})` : ''} — the itinerary must account for mid-day downtime near their home base.`
-    : '';
+
+  const napContext = (() => {
+    if (!napRequired) return '';
+    if (napDetails && napDetails.naps.length > 0) {
+      const { count, naps } = napDetails;
+      const windowDescriptions = naps.map((nap, i) => {
+        const label = count === 2 ? (i === 0 ? 'Morning nap' : 'Afternoon nap') : 'Nap';
+        const time = nap.approxTime ? ` (~${nap.approxTime})` : '';
+        const crib = nap.strollerOk ? 'stroller/carrier OK — can stay out' : 'REQUIRES crib/home base — must return';
+        return `${label}${time}: ${crib}`;
+      });
+      return `Child requires ${count === 2 ? 'TWO naps per day' : 'one nap per day'}: ${windowDescriptions.join('; ')}. Build the itinerary strictly around these windows — do not schedule activities that conflict.`;
+    }
+    return `One or more children still require naps${napSchedule ? ` (typically ${napSchedule})` : ''} — the itinerary must account for mid-day downtime near their home base.`;
+  })();
 
   const vibeContext = [
     vibes.environment && `They're drawn to ${vibes.environment === 'beach' ? 'beach and water environments' : 'mountains and hiking'}`,

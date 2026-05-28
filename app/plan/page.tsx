@@ -101,10 +101,11 @@ export default function PlanPage() {
                 children={inputs.children}
                 napRequired={inputs.napRequired}
                 napSchedule={inputs.napSchedule || ''}
+                napDetails={inputs.napDetails}
                 onAdultsChange={(adults) => setInputs({ ...inputs, adults })}
                 onChildrenChange={(children: Child[]) => setInputs({ ...inputs, children })}
-                onNapChange={(required, schedule) =>
-                  setInputs({ ...inputs, napRequired: required, napSchedule: schedule || '' })
+                onNapChange={(required, schedule, napDetails) =>
+                  setInputs({ ...inputs, napRequired: required, napSchedule: schedule || '', napDetails })
                 }
               />
             )}
