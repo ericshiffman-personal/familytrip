@@ -142,6 +142,8 @@ CRITICAL RULES:
 - Keep each field to 1-2 sentences maximum — be specific but concise
 - Only include napNote if napRequired is true, otherwise omit the field entirely
 - tip should be one short practical sentence
+- bookingFlags: only include items that genuinely need advance reservations — specific popular restaurants, limited-capacity tours, timed-entry attractions, boat trips that sell out. Do NOT flag generic things (hotels, flights, groceries). Max 3 per day. If nothing needs booking that day, omit the field entirely or use an empty array.
+- urgent: true only for things that book out weeks or months ahead (e.g. Alcatraz, popular safari slots, Michelin restaurants). false for things that just benefit from a reservation a few days out.
 
 Respond with valid JSON only:
 {
@@ -153,7 +155,14 @@ Respond with valid JSON only:
       "afternoon": "Specific activity (note nap time if applicable)",
       "evening": "Dinner suggestion + evening activity",
       "napNote": "Where/how to handle nap today (only if napRequired)",
-      "tip": "One practical tip for today specific to this family"
+      "tip": "One practical tip for today specific to this family",
+      "bookingFlags": [
+        {
+          "item": "Specific tour or restaurant name",
+          "leadTime": "Book X weeks ahead — sells out fast",
+          "urgent": true
+        }
+      ]
     }
   ]
 }`;

@@ -69,6 +69,12 @@ export interface RecommendationResponse {
   ourCallSummary: string;
 }
 
+export interface BookingFlag {
+  item: string;      // e.g. "Alcatraz tickets", "Blue Cave boat tour"
+  leadTime: string;  // e.g. "Book 4–6 weeks ahead", "Reserve 1 week out"
+  urgent: boolean;   // true = high demand / books out fast
+}
+
 export interface ItineraryDay {
   day: number;
   title: string;
@@ -77,6 +83,7 @@ export interface ItineraryDay {
   evening: string;
   napNote?: string;
   tip: string;
+  bookingFlags?: BookingFlag[];
 }
 
 export interface PackingCategory {

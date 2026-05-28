@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ItineraryDay as ItineraryDayType } from '@/types';
+import { ItineraryDay as ItineraryDayType, BookingFlag } from '@/types';
 
 interface ItineraryDayProps {
   day: ItineraryDayType;
@@ -53,6 +53,37 @@ export default function ItineraryDay({ day, index }: ItineraryDayProps) {
           <div className="bg-coral-light rounded-xl px-4 py-3 flex gap-2 items-start border-l-4 border-coral">
             <span>💡</span>
             <p className="text-sm text-ink-soft leading-relaxed">{day.tip}</p>
+          </div>
+        )}
+
+        {/* Booking flags */}
+        {Array.isArray(day.bookingFlags) && day.bookingFlags.length > 0 && (
+          <div className="border-t border-cream-dark pt-4">
+            <p className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-2">
+              📋 Book ahead
+            </p>
+            <div className="space-y-2">
+              {day.bookingFlags.map((flag: BookingFlag, i: number) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-3 rounded-xl px-3 py-2.5 ${
+                    flag.urgent
+                      ? 'bg-coral-light border border-coral/20'
+                      : 'bg-cream border border-cream-dark'
+                  }`}
+                >
+                  <span className="text-sm mt-0.5 flex-shrink-0">
+                    {flag.urgent ? '⚠️' : '📅'}
+                  </span>
+                  <div className="min-w-0">
+                    <p className={`text-sm font-semibold leading-snug ${flag.urgent ? 'text-coral-dark' : 'text-navy'}`}>
+                      {flag.item}
+                    </p>
+                    <p className="text-xs text-ink-muted mt-0.5">{flag.leadTime}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
