@@ -19,6 +19,7 @@ export default function TripPage() {
 
   const [tripInputs, setTripInputs] = useState<TripInputs | null>(null);
   const [destination, setDestination] = useState<Destination | null>(null);
+  const [isFastPath, setIsFastPath] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('itinerary');
   const [heroPhoto, setHeroPhoto] = useState<{ url: string; photographer: string; photographerUrl: string } | null>(null);
 
@@ -37,13 +38,29 @@ export default function TripPage() {
     }
     setTripInputs(inputs);
 
-    const recKey = 'familytrip_recommendations';
-    const raw = sessionStorage.getItem(recKey);
-    if (raw) {
-      const rec: RecommendationResponse = JSON.parse(raw);
-      const dest = rec.primary.slug === slug ? rec.primary : rec.alternative;
-      setDestination(dest);
+    // 1. Check full recommendations (normal flow)
+    const recRaw = sessionStorage.getItem('familytrip_recommendations');
+    if (recRaw) {
+      try {
+        const rec: RecommendationResponse = JSON.parse(recRaw);
+        const dest = rec.primary.slug === slug ? rec.primary
+                   : rec.alternative.slug === slug ? rec.alternative
+                   : null;
+        if (dest) { setDestination(dest); return; }
+      } catch { /* fall through */ }
     }
+
+    // 2. Check fast-path destination (user came from /go)
+    const fastpathRaw = sessionStorage.getItem('familytrip_destination');
+    if (fastpathRaw) {
+      try {
+        const dest: Destination = JSON.parse(fastpathRaw);
+        if (dest.slug === slug) { setIsFastPath(true); setDestination(dest); return; }
+      } catch { /* fall through */ }
+    }
+
+    // Nothing matched — send them back to plan
+    router.push('/plan');
   }, [slug, router]);
 
   // Fetch hero photo when destination is known — just the name for best specificity
@@ -147,8 +164,11 @@ export default function TripPage() {
           </div>
         )}
         <div className="relative z-10 px-6 py-10 max-w-2xl mx-auto">
-          <Link href="/results" className="text-white/60 text-sm hover:text-white transition-colors mb-5 inline-block">
-            ← Back to options
+          <Link
+            href={isFastPath ? '/go' : '/results'}
+            className="text-white/60 text-sm hover:text-white transition-colors mb-5 inline-block"
+          >
+            {isFastPath ? '← Change destination' : '← Back to options'}
           </Link>
           <h1 className="font-display text-3xl font-bold text-white mb-1">{destination.name}</h1>
           <p className="text-white/70 text-sm">{destination.tagline}</p>
@@ -263,10 +283,10 @@ export default function TripPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-cream-dark px-6 py-4 shadow-lg">
         <div className="max-w-2xl mx-auto flex gap-3">
           <Link
-            href="/results"
+            href={isFastPath ? '/go' : '/results'}
             className="flex-1 py-3 rounded-xl border-2 border-cream-dark text-ink text-sm font-medium text-center hover:border-navy/30 transition-colors"
           >
-            ← Change destination
+            {isFastPath ? '← Change destination' : '← Back to options'}
           </Link>
           <button
             className="flex-1 py-3 rounded-xl bg-coral text-white text-sm font-bold hover:bg-coral-dark transition-colors shadow-md shadow-coral/20"

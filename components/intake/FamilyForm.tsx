@@ -21,7 +21,7 @@ export default function FamilyForm({
   onChildrenChange,
   onNapChange,
 }: FamilyFormProps) {
-  const hasToddler = children.some((c) => c.age <= 3);
+  const hasToddler = children.some((c) => c.age <= 5);
 
   const addChild = () => {
     onChildrenChange([...children, { age: 3 }]);
