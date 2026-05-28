@@ -25,6 +25,7 @@ const defaultInputs: TripInputs = {
   budget: 'comfortable',
   departureCity: '',
   travelMethod: 'either',
+  travelMonth: '',
   dealBreakers: '',
   previousBadExperience: '',
 };
@@ -115,6 +116,7 @@ export default function PlanPage() {
                   budget: inputs.budget,
                   departureCity: inputs.departureCity,
                   travelMethod: inputs.travelMethod,
+                  travelMonth: inputs.travelMonth || '',
                 }}
                 onChange={(vals) => setInputs({ ...inputs, ...vals })}
               />

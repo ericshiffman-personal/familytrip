@@ -2,7 +2,7 @@ import { TripInputs, Destination } from '@/types';
 import { getChildrenSummary } from './profile';
 
 function buildFamilyContext(inputs: TripInputs): string {
-  const { adults, children, napRequired, napSchedule, vibes, duration, budget, departureCity, travelMethod, dealBreakers } = inputs;
+  const { adults, children, napRequired, napSchedule, vibes, duration, budget, departureCity, travelMethod, travelMonth, dealBreakers } = inputs;
 
   const childrenSummary = getChildrenSummary(children);
   const napContext = napRequired
@@ -25,6 +25,7 @@ FAMILY PROFILE:
 - Budget feel: ${budget === 'budget' ? 'watching costs carefully' : budget === 'comfortable' ? 'comfortable spending without being extravagant' : 'willing to splurge for the right experience'}
 - Flying from: ${departureCity}
 - Travel preference: ${travelMethod === 'fly' ? 'flying' : travelMethod === 'drive' ? 'driving/road trip' : 'open to either'}
+- Travel timing: ${travelMonth && travelMonth !== 'Flexible' ? travelMonth : 'flexible / not yet decided'}
 - What would ruin this trip: "${dealBreakers}"
 ${vibeContext ? `- Vibe preferences: ${vibeContext}` : ''}
   `.trim();

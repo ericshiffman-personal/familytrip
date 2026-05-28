@@ -2,12 +2,18 @@
 
 import { TripInputs } from '@/types';
 
-type TripDetailsFields = Pick<TripInputs, 'duration' | 'budget' | 'departureCity' | 'travelMethod'>;
+type TripDetailsFields = Pick<TripInputs, 'duration' | 'budget' | 'departureCity' | 'travelMethod' | 'travelMonth'>;
 
 interface TripDetailsProps {
   values: TripDetailsFields;
   onChange: (values: TripDetailsFields) => void;
 }
+
+const MONTHS = [
+  'January', 'February', 'March', 'April',
+  'May', 'June', 'July', 'August',
+  'September', 'October', 'November', 'December',
+];
 
 export default function TripDetails({ values, onChange }: TripDetailsProps) {
   const update = <K extends keyof TripDetailsFields>(key: K, value: TripDetailsFields[K]) => {
@@ -51,6 +57,41 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Travel month */}
+      <div>
+        <label className="block text-sm font-semibold text-navy mb-1">
+          When are you thinking of going?
+        </label>
+        <p className="text-xs text-ink-muted mb-3">
+          Helps us flag weather, peak pricing, hurricane season, and school-holiday crowds.
+        </p>
+        <div className="grid grid-cols-4 gap-2 mb-2">
+          {MONTHS.map((month) => (
+            <button
+              key={month}
+              onClick={() => update('travelMonth', values.travelMonth === month ? '' : month)}
+              className={`py-2.5 rounded-xl border-2 text-center transition-all text-sm ${
+                values.travelMonth === month
+                  ? 'border-coral bg-coral-light font-semibold text-coral'
+                  : 'border-cream-dark bg-white hover:border-coral/40 text-navy'
+              }`}
+            >
+              {month.slice(0, 3)}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => update('travelMonth', values.travelMonth === 'Flexible' ? '' : 'Flexible')}
+          className={`w-full py-2.5 rounded-xl border-2 text-center transition-all text-sm ${
+            values.travelMonth === 'Flexible'
+              ? 'border-coral bg-coral-light font-semibold text-coral'
+              : 'border-cream-dark bg-white hover:border-coral/40 text-ink-muted'
+          }`}
+        >
+          Flexible / not sure yet
+        </button>
       </div>
 
       {/* Budget */}
