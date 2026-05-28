@@ -2,7 +2,7 @@
 
 import { TripInputs } from '@/types';
 
-type TripDetailsFields = Pick<TripInputs, 'duration' | 'budget' | 'departureCity' | 'travelMethod' | 'travelMonth'>;
+type TripDetailsFields = Pick<TripInputs, 'duration' | 'budget' | 'departureCity' | 'travelMethod' | 'directFlightsOnly' | 'travelMonth'>;
 
 interface TripDetailsProps {
   values: TripDetailsFields;
@@ -189,6 +189,31 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
             </button>
           ))}
         </div>
+
+        {/* Direct flights toggle — only relevant when flying */}
+        {(values.travelMethod === 'fly' || values.travelMethod === 'either') && (
+          <div className="mt-3 flex gap-2">
+            {[
+              { value: true,  label: 'Direct flights only',     desc: 'Non-stop or we\'re not going' },
+              { value: false, label: 'Connections are fine',    desc: 'We\'ll deal with a layover'   },
+            ].map((opt) => (
+              <button
+                key={String(opt.value)}
+                onClick={() => update('directFlightsOnly', opt.value)}
+                className={`flex-1 p-3 rounded-xl border-2 text-left transition-all ${
+                  values.directFlightsOnly === opt.value
+                    ? 'border-coral bg-coral-light'
+                    : 'border-cream-dark bg-white hover:border-coral/40'
+                }`}
+              >
+                <div className={`font-semibold text-xs ${values.directFlightsOnly === opt.value ? 'text-coral' : 'text-navy'}`}>
+                  {opt.label}
+                </div>
+                <div className="text-ink-muted text-xs mt-0.5">{opt.desc}</div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

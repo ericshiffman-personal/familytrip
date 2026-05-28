@@ -32,6 +32,7 @@ export interface TripInputs {
   budget: 'budget' | 'comfortable' | 'splurge';
   departureCity: string;
   travelMethod: 'fly' | 'drive' | 'either';
+  directFlightsOnly?: boolean;
   travelMonth?: string;
   dealBreakers: string;
   previousBadExperience?: string;

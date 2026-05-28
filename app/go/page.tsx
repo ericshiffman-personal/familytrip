@@ -41,6 +41,7 @@ export default function GoPage() {
   const [napSchedule, setNapSchedule] = useState('');
   const [napDetails, setNapDetails] = useState<NapDetails | undefined>(undefined);
   const [departureCity, setDepartureCity] = useState('');
+  const [directFlightsOnly, setDirectFlightsOnly] = useState<boolean | undefined>(undefined);
   const [dealBreakers, setDealBreakers] = useState('');
   const [profileLoaded, setProfileLoaded] = useState(false);
 
@@ -104,7 +105,8 @@ export default function GoPage() {
       duration,
       budget: 'comfortable',
       departureCity,
-      travelMethod: 'either',
+      travelMethod: 'fly',
+      directFlightsOnly,
       travelMonth: travelMonth || undefined,
       dealBreakers,
     };
@@ -336,7 +338,7 @@ export default function GoPage() {
           {/* Departure city */}
           <div>
             <label className="block text-sm font-semibold text-navy mb-2">
-              Flying (or driving) from? <span className="text-coral">*</span>
+              Flying from? <span className="text-coral">*</span>
             </label>
             <input
               type="text"
@@ -345,6 +347,29 @@ export default function GoPage() {
               onChange={(e) => setDepartureCity(e.target.value)}
               className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors"
             />
+
+            {/* Direct flights toggle */}
+            <div className="flex gap-2 mt-2">
+              {[
+                { value: true,  label: 'Direct flights only',  desc: "Non-stop or we're not going" },
+                { value: false, label: 'Connections are fine', desc: "We'll deal with a layover"   },
+              ].map((opt) => (
+                <button
+                  key={String(opt.value)}
+                  onClick={() => setDirectFlightsOnly(opt.value)}
+                  className={`flex-1 p-3 rounded-xl border-2 text-left transition-all ${
+                    directFlightsOnly === opt.value
+                      ? 'border-coral bg-coral-light'
+                      : 'border-cream-dark bg-white hover:border-coral/40'
+                  }`}
+                >
+                  <div className={`font-semibold text-xs ${directFlightsOnly === opt.value ? 'text-coral' : 'text-navy'}`}>
+                    {opt.label}
+                  </div>
+                  <div className="text-ink-muted text-xs mt-0.5">{opt.desc}</div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

@@ -2,7 +2,7 @@ import { TripInputs, Destination } from '@/types';
 import { getChildrenSummary } from './profile';
 
 function buildFamilyContext(inputs: TripInputs): string {
-  const { adults, children, napRequired, napSchedule, napDetails, vibes, duration, budget, departureCity, travelMethod, travelMonth, dealBreakers } = inputs;
+  const { adults, children, napRequired, napSchedule, napDetails, vibes, duration, budget, departureCity, travelMethod, directFlightsOnly, travelMonth, dealBreakers } = inputs;
 
   const childrenSummary = getChildrenSummary(children);
 
@@ -37,6 +37,7 @@ FAMILY PROFILE:
 - Budget feel: ${budget === 'budget' ? 'watching costs carefully' : budget === 'comfortable' ? 'comfortable spending without being extravagant' : 'willing to splurge for the right experience'}
 - Flying from: ${departureCity}
 - Travel preference: ${travelMethod === 'fly' ? 'flying' : travelMethod === 'drive' ? 'driving/road trip' : 'open to either'}
+- Flight constraint: ${travelMethod === 'drive' ? 'n/a (driving)' : directFlightsOnly === true ? 'DIRECT FLIGHTS ONLY — hard constraint, no connections' : directFlightsOnly === false ? 'connecting flights acceptable' : 'no preference stated'}
 - Travel timing: ${travelMonth && travelMonth !== 'Flexible' ? travelMonth : 'flexible / not yet decided'}
 - What would ruin this trip: "${dealBreakers}"
 ${vibeContext ? `- Vibe preferences: ${vibeContext}` : ''}
@@ -64,6 +65,7 @@ CRITICAL RULES:
 4. hiddenCatch: the one thing parents won't see coming — specific, not generic.
 5. whenToIgnore: tell them honestly when YOUR recommendation is wrong for them. This builds trust.
 6. confidence: "High" if it fits most of their constraints, "Medium" if there are real question marks, "Low" only if you'd still pick it but with caveats.
+7. If directFlightsOnly is true, this is a HARD CONSTRAINT — both recommendations MUST have non-stop flights from their departure city. Do not suggest a destination that requires a connection.
 
 Respond with valid JSON only. No markdown, no text outside the JSON:
 

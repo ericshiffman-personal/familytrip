@@ -117,6 +117,7 @@ export default function PlanPage() {
                   budget: inputs.budget,
                   departureCity: inputs.departureCity,
                   travelMethod: inputs.travelMethod,
+                  directFlightsOnly: inputs.directFlightsOnly,
                   travelMonth: inputs.travelMonth || '',
                 }}
                 onChange={(vals) => setInputs({ ...inputs, ...vals })}
