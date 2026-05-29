@@ -36,6 +36,7 @@ export interface TripInputs {
   travelMonth?: string;
   dealBreakers: string;
   previousBadExperience?: string;
+  dietaryRestrictions: string[];  // e.g. ["Vegetarian", "Nut allergy"]
 }
 
 export interface TradeoffChip {
@@ -100,4 +101,42 @@ export interface FamilyProfile {
   activityLevel: 'relaxed' | 'moderate' | 'active';
   dealBreakers: string;
   savedAt: string;
+}
+
+// ── Dining feature ──────────────────────────────────────────────────
+
+export interface DiningPreferences {
+  cuisineVibe: 'local' | 'italian' | 'asian' | 'american' | 'adventurous';
+  diningStyle: 'casual' | 'mixed' | 'special';
+}
+
+export interface RestaurantRecommendation {
+  name: string;
+  neighborhood: string;
+  cuisineType: string;
+  priceRange: '$' | '$$' | '$$$' | '$$$$';
+  whyItWorks: string;        // 1 sentence, family-specific
+  bestForMeal: 'dinner' | 'lunch';
+  bestForDay?: number;       // Claude's soft suggestion (1-indexed)
+  bookingLeadTime: string;   // e.g. "Reserve 3–4 days out" or "Walk-ins fine on weekdays"
+  bookingUrgent: boolean;
+  openTableQuery: string;    // e.g. "Nobu Malibu Los Angeles" — for constructing search URL
+}
+
+export type RestaurantStatus = 'booked' | 'considering' | 'flexible';
+
+export interface SavedRestaurant {
+  dayNumber: number | null;  // null = flexible / any night
+  status: RestaurantStatus;
+  restaurant: RestaurantRecommendation;
+  bookingNote?: string;      // optional: "8pm, conf #R123456"
+  savedAt: string;           // ISO timestamp
+}
+
+export interface DiningData {
+  slug: string;
+  preferences: DiningPreferences;
+  recommendations: RestaurantRecommendation[];
+  savedRestaurants: SavedRestaurant[];
+  generatedAt: string;
 }

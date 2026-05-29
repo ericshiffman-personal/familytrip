@@ -3,15 +3,26 @@
 import { Child, NapDetails } from '@/types';
 import NapSection from './NapSection';
 
+const DIETARY_CHIPS = [
+  'None',
+  'Vegetarian',
+  'Vegan',
+  'Gluten-free',
+  'Nut allergy',
+  'Shellfish allergy',
+] as const;
+
 interface FamilyFormProps {
   adults: number;
   children: Child[];
   napRequired: boolean;
   napSchedule: string;
   napDetails?: NapDetails;
+  dietaryRestrictions: string[];
   onAdultsChange: (n: number) => void;
   onChildrenChange: (children: Child[]) => void;
   onNapChange: (required: boolean, schedule?: string, napDetails?: NapDetails) => void;
+  onDietaryChange: (restrictions: string[]) => void;
 }
 
 export default function FamilyForm({
@@ -20,12 +31,27 @@ export default function FamilyForm({
   napRequired,
   napSchedule,
   napDetails,
+  dietaryRestrictions,
   onAdultsChange,
   onChildrenChange,
   onNapChange,
+  onDietaryChange,
 }: FamilyFormProps) {
   const hasToddler = children.some((c) => c.age <= 5);
   const hasInfant  = children.some((c) => c.age <= 2);
+
+  const toggleDietary = (chip: string) => {
+    if (chip === 'None') {
+      onDietaryChange([]);
+      return;
+    }
+    const withoutNone = dietaryRestrictions.filter((r) => r !== 'None');
+    if (withoutNone.includes(chip)) {
+      onDietaryChange(withoutNone.filter((r) => r !== chip));
+    } else {
+      onDietaryChange([...withoutNone, chip]);
+    }
+  };
 
   const addChild = () => {
     onChildrenChange([...children, { age: 3 }]);
@@ -134,6 +160,37 @@ export default function FamilyForm({
           onChange={onNapChange}
         />
       )}
+
+      {/* Dietary restrictions */}
+      <div className="card p-6">
+        <label className="block text-sm font-semibold text-navy mb-1">
+          Dietary restrictions
+        </label>
+        <p className="text-xs text-ink-muted mb-3">
+          Affects restaurant recommendations and packing list. Select all that apply.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {DIETARY_CHIPS.map((chip) => {
+            const isSelected =
+              chip === 'None'
+                ? dietaryRestrictions.length === 0
+                : dietaryRestrictions.includes(chip);
+            return (
+              <button
+                key={chip}
+                onClick={() => toggleDietary(chip)}
+                className={`px-4 py-2 rounded-full border-2 text-sm font-medium transition-all ${
+                  isSelected
+                    ? 'border-coral bg-coral-light text-coral'
+                    : 'border-cream-dark bg-white text-ink-muted hover:border-coral/40'
+                }`}
+              >
+                {chip}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

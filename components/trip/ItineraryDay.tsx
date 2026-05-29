@@ -1,14 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ItineraryDay as ItineraryDayType, BookingFlag } from '@/types';
+import { ItineraryDay as ItineraryDayType, BookingFlag, SavedRestaurant } from '@/types';
+import ItineraryEveningSlot from './ItineraryEveningSlot';
 
 interface ItineraryDayProps {
   day: ItineraryDayType;
   index: number;
+  savedRestaurant?: SavedRestaurant;
 }
 
-export default function ItineraryDay({ day, index }: ItineraryDayProps) {
+export default function ItineraryDay({ day, index, savedRestaurant }: ItineraryDayProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,10 +25,10 @@ export default function ItineraryDay({ day, index }: ItineraryDayProps) {
       </div>
 
       <div className="p-5 space-y-4">
+        {/* Morning and Afternoon slots */}
         {[
           { label: 'Morning', emoji: '🌅', content: day.morning },
           { label: 'Afternoon', emoji: '☀️', content: day.afternoon },
-          { label: 'Evening', emoji: '🌆', content: day.evening },
         ].map(({ label, emoji, content }) => (
           <div key={label} className="flex gap-3">
             <div className="flex flex-col items-center gap-1 pt-0.5">
@@ -41,6 +43,24 @@ export default function ItineraryDay({ day, index }: ItineraryDayProps) {
             </div>
           </div>
         ))}
+
+        {/* Evening slot — enriched if restaurant saved for this day */}
+        <div className="flex gap-3">
+          <div className="flex flex-col items-center gap-1 pt-0.5">
+            <span className="text-lg">🌆</span>
+            <div className="flex-1 w-px bg-cream-dark min-h-4" />
+          </div>
+          <div className="pb-2 flex-1">
+            <p className="text-xs font-bold text-ink-muted uppercase tracking-wide mb-1">
+              Evening
+            </p>
+            <ItineraryEveningSlot
+              dayNumber={day.day}
+              eveningText={day.evening}
+              savedRestaurant={savedRestaurant}
+            />
+          </div>
+        </div>
 
         {day.napNote && (
           <div className="bg-navy-light rounded-xl px-4 py-3 flex gap-2 items-start">

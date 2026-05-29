@@ -43,7 +43,22 @@ export default function GoPage() {
   const [departureCity, setDepartureCity] = useState('');
   const [directFlightsOnly, setDirectFlightsOnly] = useState<boolean | undefined>(undefined);
   const [dealBreakers, setDealBreakers] = useState('');
+  const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
   const [profileLoaded, setProfileLoaded] = useState(false);
+
+  const DIETARY_CHIPS = [
+    'None', 'Vegetarian', 'Vegan', 'Gluten-free', 'Nut allergy', 'Shellfish allergy',
+  ] as const;
+
+  const toggleDietary = (chip: string) => {
+    if (chip === 'None') { setDietaryRestrictions([]); return; }
+    const withoutNone = dietaryRestrictions.filter((r) => r !== 'None');
+    if (withoutNone.includes(chip)) {
+      setDietaryRestrictions(withoutNone.filter((r) => r !== chip));
+    } else {
+      setDietaryRestrictions([...withoutNone, chip]);
+    }
+  };
 
   useEffect(() => {
     const profile = loadProfile();
@@ -109,6 +124,7 @@ export default function GoPage() {
       directFlightsOnly,
       travelMonth: travelMonth || undefined,
       dealBreakers,
+      dietaryRestrictions,
     };
 
     saveTripInputs(inputs);
@@ -388,6 +404,37 @@ export default function GoPage() {
           <p className="text-xs text-ink-muted mt-1.5">
             Helps us build an itinerary that avoids your specific frustrations.
           </p>
+        </div>
+
+        {/* Dietary restrictions */}
+        <div className="card p-5">
+          <label className="block text-sm font-semibold text-navy mb-1">
+            Dietary restrictions
+          </label>
+          <p className="text-xs text-ink-muted mb-3">
+            Affects restaurant recommendations and packing list. Select all that apply.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {DIETARY_CHIPS.map((chip) => {
+              const isSelected =
+                chip === 'None'
+                  ? dietaryRestrictions.length === 0
+                  : dietaryRestrictions.includes(chip);
+              return (
+                <button
+                  key={chip}
+                  onClick={() => toggleDietary(chip)}
+                  className={`px-4 py-2 rounded-full border-2 text-sm font-medium transition-all ${
+                    isSelected
+                      ? 'border-coral bg-coral-light text-coral'
+                      : 'border-cream-dark bg-white text-ink-muted hover:border-coral/40'
+                  }`}
+                >
+                  {chip}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Submit */}

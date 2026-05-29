@@ -28,6 +28,7 @@ const defaultInputs: TripInputs = {
   travelMonth: '',
   dealBreakers: '',
   previousBadExperience: '',
+  dietaryRestrictions: [],
 };
 
 export default function PlanPage() {
@@ -102,11 +103,13 @@ export default function PlanPage() {
                 napRequired={inputs.napRequired}
                 napSchedule={inputs.napSchedule || ''}
                 napDetails={inputs.napDetails}
+                dietaryRestrictions={inputs.dietaryRestrictions}
                 onAdultsChange={(adults) => setInputs({ ...inputs, adults })}
                 onChildrenChange={(children: Child[]) => setInputs({ ...inputs, children })}
                 onNapChange={(required, schedule, napDetails) =>
                   setInputs({ ...inputs, napRequired: required, napSchedule: schedule || '', napDetails })
                 }
+                onDietaryChange={(dietaryRestrictions) => setInputs({ ...inputs, dietaryRestrictions })}
               />
             )}
 

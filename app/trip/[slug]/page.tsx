@@ -5,12 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { loadTripInputs } from '@/lib/profile';
-import { TripInputs, Destination, ItineraryDay as ItineraryDayType, PackingCategory, RecommendationResponse } from '@/types';
+import { loadDiningData, saveDiningData } from '@/lib/restaurantBank';
+import { TripInputs, Destination, ItineraryDay as ItineraryDayType, PackingCategory, RecommendationResponse, DiningData, SavedRestaurant } from '@/types';
 import ItineraryDay from '@/components/trip/ItineraryDay';
 import PackingList from '@/components/trip/PackingList';
 import ResearchPaste from '@/components/trip/ResearchPaste';
+import DiningGuide from '@/components/trip/DiningGuide';
 
-type Tab = 'itinerary' | 'packing' | 'research';
+type Tab = 'itinerary' | 'dining' | 'packing' | 'research';
 
 export default function TripPage() {
   const params = useParams();
@@ -25,6 +27,7 @@ export default function TripPage() {
 
   const [itinerary, setItinerary] = useState<ItineraryDayType[] | null>(null);
   const [packingList, setPackingList] = useState<PackingCategory[] | null>(null);
+  const [diningData, setDiningData] = useState<DiningData | null>(null);
   const [itineraryLoading, setItineraryLoading] = useState(false);
   const [packingLoading, setPackingLoading] = useState(false);
   const [itineraryError, setItineraryError] = useState<string | null>(null);
@@ -62,6 +65,12 @@ export default function TripPage() {
     // Nothing matched — send them back to plan
     router.push('/plan');
   }, [slug, router]);
+
+  // Restore dining data from localStorage when slug is known
+  useEffect(() => {
+    const saved = loadDiningData(slug);
+    if (saved) setDiningData(saved);
+  }, [slug]);
 
   // Fetch hero photo when destination is known — just the name for best specificity
   useEffect(() => {
@@ -133,6 +142,23 @@ export default function TripPage() {
     }
   };
 
+  const handleDiningDataChange = (data: DiningData) => {
+    setDiningData(data);
+    saveDiningData(slug, data);
+  };
+
+  // numDays mirrors the logic in buildItineraryPrompt
+  const numDays =
+    tripInputs?.duration === '3-4 days'  ? 4 :
+    tripInputs?.duration === '5-7 days'  ? 7 :
+    tripInputs?.duration === '8-10 days' ? 9 :
+    10; // '10+ days'
+
+  // Build a day-number → SavedRestaurant lookup for the itinerary evening slots
+  const savedByDay = (diningData?.savedRestaurants ?? [])
+    .filter((s): s is SavedRestaurant & { dayNumber: number } => s.dayNumber !== null)
+    .reduce<Record<number, SavedRestaurant>>((acc, s) => { acc[s.dayNumber] = s; return acc; }, {});
+
   if (!destination || !tripInputs) {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
@@ -190,8 +216,9 @@ export default function TripPage() {
         <div className="max-w-2xl mx-auto px-6 flex">
           {([
             { key: 'itinerary', label: '📅 Itinerary' },
-            { key: 'packing', label: '🧳 Packing' },
-            { key: 'research', label: '📋 My Research' },
+            { key: 'dining',    label: '🍽️ Dining' },
+            { key: 'packing',   label: '🧳 Packing' },
+            { key: 'research',  label: '📋 Research' },
           ] as { key: Tab; label: string }[]).map((tab) => (
             <button
               key={tab.key}
@@ -233,10 +260,27 @@ export default function TripPage() {
                   </span>
                 </div>
                 {itinerary.map((day, idx) => (
-                  <ItineraryDay key={day.day} day={day} index={idx} />
+                  <ItineraryDay
+                    key={day.day}
+                    day={day}
+                    index={idx}
+                    savedRestaurant={savedByDay[day.day]}
+                  />
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'dining' && (
+          <div>
+            <DiningGuide
+              tripInputs={tripInputs}
+              destination={destination}
+              numDays={numDays}
+              diningData={diningData}
+              onDiningDataChange={handleDiningDataChange}
+            />
           </div>
         )}
 

@@ -1,8 +1,8 @@
-import { TripInputs, Destination } from '@/types';
+import { TripInputs, Destination, DiningPreferences } from '@/types';
 import { getChildrenSummary } from './profile';
 
 function buildFamilyContext(inputs: TripInputs): string {
-  const { adults, children, napRequired, napSchedule, napDetails, vibes, duration, budget, departureCity, travelMethod, directFlightsOnly, travelMonth, dealBreakers } = inputs;
+  const { adults, children, napRequired, napSchedule, napDetails, vibes, duration, budget, departureCity, travelMethod, directFlightsOnly, travelMonth, dealBreakers, dietaryRestrictions } = inputs;
 
   const childrenSummary = getChildrenSummary(children);
 
@@ -40,6 +40,7 @@ FAMILY PROFILE:
 - Flight constraint: ${travelMethod === 'drive' ? 'n/a (driving)' : directFlightsOnly === true ? 'DIRECT FLIGHTS ONLY — hard constraint, no connections' : directFlightsOnly === false ? 'connecting flights acceptable' : 'no preference stated'}
 - Travel timing: ${travelMonth && travelMonth !== 'Flexible' ? travelMonth : 'flexible / not yet decided'}
 - What would ruin this trip: "${dealBreakers}"
+- Dietary restrictions (hard constraints — affects ALL meals): ${dietaryRestrictions && dietaryRestrictions.length > 0 ? dietaryRestrictions.join(', ') : 'none stated'}
 ${vibeContext ? `- Vibe preferences: ${vibeContext}` : ''}
   `.trim();
 }
@@ -123,8 +124,11 @@ For heroGradient use Tailwind classes matching the destination vibe: e.g. "from-
 
 export function buildItineraryPrompt(inputs: TripInputs, destination: Destination): string {
   const familyContext = buildFamilyContext(inputs);
-  // Cap at 5 days for reliable API responses — longer trips will be paginated in a future build
-  const durationDays = inputs.duration === '3-4 days' ? 4 : 5;
+  const durationDays =
+    inputs.duration === '3-4 days'  ? 4 :
+    inputs.duration === '5-7 days'  ? 7 :
+    inputs.duration === '8-10 days' ? 9 :
+    10; // '10+ days'
 
   return `You are a family travel planner building a day-by-day itinerary for a specific family. Be practical, specific, and honest. This is not a generic travel guide.
 
@@ -153,7 +157,7 @@ Respond with valid JSON only:
       "title": "Arrival & First Impressions",
       "morning": "Specific activity with details",
       "afternoon": "Specific activity (note nap time if applicable)",
-      "evening": "Dinner suggestion + evening activity",
+      "evening": "Suggest a dinner neighborhood or vibe — e.g. 'Head to the Gaslamp Quarter for dinner, walkable from most hotels with kid-friendly options on Fifth Ave.' Be specific to the destination but do NOT name a single restaurant — the user will choose from curated recommendations.",
       "napNote": "Where/how to handle nap today (only if napRequired)",
       "tip": "One practical tip for today specific to this family",
       "bookingFlags": [
@@ -196,6 +200,70 @@ STRICT RULES to keep the response concise:
 - Do NOT include obvious universal items (toothbrush, phone charger, underwear)
 
 Categories to choose from (pick the 6 most relevant): Clothing, Kid Gear, Beach/Activity Gear, Documents & Money, Health & Safety, Transit Entertainment, Snacks & Food, Tech & Accessories. For infants/toddlers include nap gear and feeding supplies in Kid Gear.`;
+}
+
+export function buildDiningPrompt(
+  inputs: TripInputs,
+  destination: Destination,
+  preferences: DiningPreferences,
+  numDays: number
+): string {
+  const familyContext = buildFamilyContext(inputs);
+
+  const cuisineVibeMap: Record<DiningPreferences['cuisineVibe'], string> = {
+    local:       'Local and classic — regional specialties, tried-and-true spots the locals love',
+    italian:     'Italian/Mediterranean — pasta, pizza, fresh seafood, simple flavors kids tend to love',
+    asian:       'Asian — Japanese, Thai, Chinese, Vietnamese; great for adventurous family eaters',
+    american:    'American comfort — burgers, BBQ, familiar food that picky kids will eat happily',
+    adventurous: 'Adventurous — anything interesting; this family is up for trying something new',
+  };
+
+  const diningStyleMap: Record<DiningPreferences['diningStyle'], string> = {
+    casual:  'All casual and family-friendly — no tablecloths, no stress, kids can be loud',
+    mixed:   'Mix of casual spots with one nicer dinner — flexible, practical, one memorable meal',
+    special: 'Lean toward nicer spots — special-occasion mode, but still manageable with kids',
+  };
+
+  return `You are a local restaurant expert building a curated dining guide for a family trip. You know ${destination.name} well — the neighborhoods, which spots genuinely work for families with young kids, and what to avoid.
+
+${familyContext}
+
+DESTINATION: ${destination.name}
+TRIP LENGTH: ${numDays} days
+CUISINE VIBE: ${cuisineVibeMap[preferences.cuisineVibe]}
+DINING STYLE: ${diningStyleMap[preferences.diningStyle]}
+
+Generate 6–8 restaurant recommendations. Include a mix across neighborhoods and price points that fits the dining style above.
+
+CRITICAL RULES:
+- Every recommendation must genuinely work for this specific family (ages, dietary needs, dining style)
+- Neighborhoods must be real places in ${destination.name}
+- whyItWorks: one sentence — reference something specific about THIS family (e.g. "With a 2-year-old in tow, the outdoor patio and loud buzz means nobody will notice a meltdown")
+- priceRange: $ = under $15/person, $$ = $15–30, $$$ = $30–60, $$$$ = over $60
+- bookingLeadTime: be realistic — e.g. "Walk-ins fine on weekdays", "Reserve 3–4 days out", "Book 2–3 weeks ahead — very popular"
+- bookingUrgent: true only for places that genuinely book out weeks ahead
+- bestForDay: your suggested day number (1 to ${numDays}) based on itinerary flow — optional but helpful when it's obvious (e.g. near the beach on the beach day)
+- openTableQuery: the restaurant name + city as a clean search string, e.g. "Nobu Malibu Los Angeles"
+- Do NOT include chains, generic hotel restaurants, or tourist traps
+- Spread recommendations across neighborhoods when possible
+
+Respond with valid JSON only:
+{
+  "restaurants": [
+    {
+      "name": "Restaurant Name",
+      "neighborhood": "Neighborhood Name",
+      "cuisineType": "e.g. Japanese izakaya",
+      "priceRange": "$$",
+      "whyItWorks": "One sentence specific to this family",
+      "bestForMeal": "dinner",
+      "bestForDay": 2,
+      "bookingLeadTime": "Reserve 3–4 days out",
+      "bookingUrgent": false,
+      "openTableQuery": "Restaurant Name ${destination.name}"
+    }
+  ]
+}`;
 }
 
 export function buildConsolidatePrompt(pastedText: string, inputs: TripInputs, destination: Destination): string {
