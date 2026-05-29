@@ -6,13 +6,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { loadTripInputs } from '@/lib/profile';
 import { loadDiningData, saveDiningData } from '@/lib/restaurantBank';
-import { TripInputs, Destination, ItineraryDay as ItineraryDayType, PackingCategory, RecommendationResponse, DiningData, SavedRestaurant } from '@/types';
+import { loadHotelData, saveHotelData } from '@/lib/hotelBank';
+import { TripInputs, Destination, ItineraryDay as ItineraryDayType, PackingCategory, RecommendationResponse, DiningData, SavedRestaurant, HotelData } from '@/types';
 import ItineraryDay from '@/components/trip/ItineraryDay';
 import PackingList from '@/components/trip/PackingList';
 import ResearchPaste from '@/components/trip/ResearchPaste';
 import DiningGuide from '@/components/trip/DiningGuide';
+import HotelsGuide from '@/components/trip/HotelsGuide';
 
-type Tab = 'itinerary' | 'dining' | 'packing' | 'research';
+type Tab = 'itinerary' | 'hotels' | 'dining' | 'packing' | 'research';
 
 export default function TripPage() {
   const params = useParams();
@@ -28,6 +30,7 @@ export default function TripPage() {
   const [itinerary, setItinerary] = useState<ItineraryDayType[] | null>(null);
   const [packingList, setPackingList] = useState<PackingCategory[] | null>(null);
   const [diningData, setDiningData] = useState<DiningData | null>(null);
+  const [hotelData, setHotelData] = useState<HotelData | null>(null);
   const [itineraryLoading, setItineraryLoading] = useState(false);
   const [packingLoading, setPackingLoading] = useState(false);
   const [itineraryError, setItineraryError] = useState<string | null>(null);
@@ -66,10 +69,12 @@ export default function TripPage() {
     router.push('/plan');
   }, [slug, router]);
 
-  // Restore dining data from localStorage when slug is known
+  // Restore dining + hotel data from localStorage when slug is known
   useEffect(() => {
-    const saved = loadDiningData(slug);
-    if (saved) setDiningData(saved);
+    const savedDining = loadDiningData(slug);
+    if (savedDining) setDiningData(savedDining);
+    const savedHotel = loadHotelData(slug);
+    if (savedHotel) setHotelData(savedHotel);
   }, [slug]);
 
   // Fetch hero photo when destination is known — just the name for best specificity
@@ -147,6 +152,11 @@ export default function TripPage() {
     saveDiningData(slug, data);
   };
 
+  const handleHotelDataChange = (data: HotelData) => {
+    setHotelData(data);
+    saveHotelData(slug, data);
+  };
+
   // numDays mirrors the logic in buildItineraryPrompt
   const numDays =
     tripInputs?.duration === '3-4 days'  ? 4 :
@@ -198,6 +208,9 @@ export default function TripPage() {
           </Link>
           <h1 className="font-display text-3xl font-bold text-white mb-1">{destination.name}</h1>
           <p className="text-white/70 text-sm">{destination.tagline}</p>
+          {hotelData?.savedHotel && (
+            <p className="text-white/60 text-sm mt-1">📍 {hotelData.savedHotel.name}</p>
+          )}
           {heroPhoto && (
             <p className="mt-4 text-white/25 text-xs">
               Photo:{' '}
@@ -216,6 +229,7 @@ export default function TripPage() {
         <div className="max-w-2xl mx-auto px-6 flex">
           {([
             { key: 'itinerary', label: '📅 Itinerary' },
+            { key: 'hotels',    label: '🏨 Hotels' },
             { key: 'dining',    label: '🍽️ Dining' },
             { key: 'packing',   label: '🧳 Packing' },
             { key: 'research',  label: '📋 Research' },
@@ -270,6 +284,15 @@ export default function TripPage() {
               </div>
             )}
           </div>
+        )}
+
+        {activeTab === 'hotels' && (
+          <HotelsGuide
+            tripInputs={tripInputs}
+            destination={destination}
+            hotelData={hotelData}
+            onHotelDataChange={handleHotelDataChange}
+          />
         )}
 
         {activeTab === 'dining' && (

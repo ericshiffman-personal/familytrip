@@ -266,6 +266,56 @@ Respond with valid JSON only:
 }`;
 }
 
+export function buildHotelPrompt(inputs: TripInputs, destination: Destination): string {
+  const familyContext = buildFamilyContext(inputs);
+
+  const accommodationVibe = inputs.vibes.accommodation;
+  const isRental = accommodationVibe === 'rental';
+  const isAllInclusive = accommodationVibe === 'allinclusive';
+
+  const accommodationContext = isRental
+    ? 'This family prefers vacation rentals — recommend a vacation rental, apartment, or house (NOT a hotel). They want to feel at home, not checked in.'
+    : isAllInclusive
+    ? 'This family prefers all-inclusive resorts — recommend a resort with meals/activities included. Convenience and having everything handled is the priority.'
+    : 'This family is open to any accommodation type — recommend whatever genuinely fits best for a family at this destination (boutique hotel, apartment, or small resort).';
+
+  const bookingPlatform = isRental ? 'airbnb' : 'booking';
+
+  return `You are a family travel expert making a single, confident hotel recommendation. You are NOT giving a list of options — you are making THE call, like a trusted friend who knows this destination well.
+
+${familyContext}
+
+DESTINATION: ${destination.name}
+ACCOMMODATION PREFERENCE: ${accommodationContext}
+
+Make ONE specific recommendation. Name a real, currently operating property you're confident exists.
+
+CRITICAL RULES:
+- name: a real property — if you're not confident it exists and operates today, pick one you ARE confident about
+- type: 'hotel' | 'resort' | 'boutique-hotel' | 'vacation-rental' | 'apartment'
+- whyItWorks: 1-2 sentences that reference something specific about THIS family (ages, nap needs, budget, pace). Never generic.
+- keyAmenities: only list amenities that matter for THIS family. Max 5. Don't list generic hotel features.
+- verifyBefore: the 2-3 things this family must confirm before booking (e.g. crib availability, connecting rooms, kitchen). Max 3.
+- priceRange: $ = under $150/night, $$ = $150-300, $$$ = $300-500, $$$$ = over $500
+- bookingNote: one honest sentence about booking timing, seasonal demand, or anything they'd regret not knowing
+- bookingPlatform: "${bookingPlatform}" (do not change this — it is determined by the family's accommodation preference)
+
+Respond with valid JSON only:
+{
+  "recommendation": {
+    "name": "Specific Property Name",
+    "type": "boutique-hotel",
+    "neighborhood": "Neighborhood, Area",
+    "whyItWorks": "1-2 sentences specific to this family",
+    "keyAmenities": ["Amenity 1", "Amenity 2", "Amenity 3"],
+    "verifyBefore": ["Thing to verify 1", "Thing to verify 2"],
+    "priceRange": "$$$",
+    "bookingNote": "One honest sentence about booking timing or caveats",
+    "bookingPlatform": "${bookingPlatform}"
+  }
+}`;
+}
+
 export function buildConsolidatePrompt(pastedText: string, inputs: TripInputs, destination: Destination): string {
   return `A family has been researching ${destination.name} for their trip and has pasted their notes, reviews, and research below. They have ${getChildrenSummary(inputs.children)} and are traveling for ${inputs.duration}.
 

@@ -140,3 +140,34 @@ export interface DiningData {
   savedRestaurants: SavedRestaurant[];
   generatedAt: string;
 }
+
+// ── Hotels feature ───────────────────────────────────────────────────
+
+export interface HotelRecommendation {
+  name: string;                 // specific named property
+  type: 'hotel' | 'resort' | 'boutique-hotel' | 'vacation-rental' | 'apartment';
+  neighborhood: string;
+  whyItWorks: string;           // 1-2 sentences, must reference THIS family specifically
+  keyAmenities: string[];       // only amenities relevant to this family
+  verifyBefore: string[];       // 2-3 things to confirm before booking
+  priceRange: '$' | '$$' | '$$$' | '$$$$';
+  bookingNote: string;          // honest sentence on booking timing / caveats
+  bookingPlatform: 'booking' | 'airbnb';
+}
+
+export interface SavedHotel {
+  name: string;                 // user-confirmed name (may differ from recommendation)
+  bookingNote?: string;         // confirmation # or user notes
+  savedAt: string;
+  // Future itinerary sync fields (not wired yet):
+  // neighborhood?: string;
+  // checkIn?: string;
+  // checkOut?: string;
+}
+
+export interface HotelData {
+  slug: string;
+  recommendation: HotelRecommendation;
+  savedHotel?: SavedHotel;      // undefined until user marks as booked
+  generatedAt: string;
+}
