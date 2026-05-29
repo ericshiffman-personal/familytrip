@@ -151,7 +151,7 @@ export default function TripPage() {
   const numDays =
     tripInputs?.duration === '3-4 days'  ? 4 :
     tripInputs?.duration === '5-7 days'  ? 7 :
-    tripInputs?.duration === '8-10 days' ? 9 :
+    tripInputs?.duration === '8-10 days' ? 10 :
     10; // '10+ days'
 
   // Build a day-number → SavedRestaurant lookup for the itinerary evening slots

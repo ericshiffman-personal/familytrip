@@ -127,7 +127,7 @@ export function buildItineraryPrompt(inputs: TripInputs, destination: Destinatio
   const durationDays =
     inputs.duration === '3-4 days'  ? 4 :
     inputs.duration === '5-7 days'  ? 7 :
-    inputs.duration === '8-10 days' ? 9 :
+    inputs.duration === '8-10 days' ? 10 :
     10; // '10+ days'
 
   return `You are a family travel planner building a day-by-day itinerary for a specific family. Be practical, specific, and honest. This is not a generic travel guide.
