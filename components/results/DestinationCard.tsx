@@ -50,7 +50,10 @@ export default function DestinationCard({
       {/* Hero band — photo fades in over gradient when ready */}
       <div className={`relative bg-gradient-to-br ${destination.heroGradient} overflow-hidden`}
            style={{ minHeight: '160px' }}>
-        {/* Photo layer */}
+        {/* Always-on dark overlay — ensures white text is readable over any gradient */}
+        <div className="absolute inset-0 bg-black/40" />
+
+        {/* Photo layer — fades in over gradient + overlay when ready */}
         {photo && (
           <motion.div
             initial={{ opacity: 0 }}

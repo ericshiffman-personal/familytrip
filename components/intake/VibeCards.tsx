@@ -3,23 +3,22 @@
 import { motion } from 'framer-motion';
 import { VibeSelections } from '@/types';
 
+type VibeOption = {
+  value: string;
+  label: string;
+  emoji: string;
+  gradient: string;
+  desc: string;
+};
+
 interface VibePair {
   key: keyof VibeSelections;
   question: string;
-  left: {
-    value: string;
-    label: string;
-    emoji: string;
-    gradient: string;
-    desc: string;
-  };
-  right: {
-    value: string;
-    label: string;
-    emoji: string;
-    gradient: string;
-    desc: string;
-  };
+  // Standard binary pair — exactly two options rendered side by side
+  left?: VibeOption;
+  right?: VibeOption;
+  // Multi-option grid — overrides left/right when present, wraps into 2×N grid
+  options?: VibeOption[];
 }
 
 const VIBE_PAIRS: VibePair[] = [
@@ -98,20 +97,36 @@ const VIBE_PAIRS: VibePair[] = [
   {
     key: 'accommodation',
     question: 'Where do you want to stay?',
-    left: {
-      value: 'allinclusive',
-      label: 'All-Inclusive Resort',
-      emoji: '🍹',
-      gradient: 'from-pink-400 to-rose-500',
-      desc: 'Everything handled, kids entertained, parents relax',
-    },
-    right: {
-      value: 'rental',
-      label: 'Rental House & Explore',
-      emoji: '🏠',
-      gradient: 'from-lime-400 to-green-500',
-      desc: 'Home base feels, cook meals, real neighborhood life',
-    },
+    options: [
+      {
+        value: 'allinclusive',
+        label: 'All-Inclusive Resort',
+        emoji: '🍹',
+        gradient: 'from-pink-400 to-rose-500',
+        desc: 'One price covers everything — beach, pool, food, and kids\' activities sorted',
+      },
+      {
+        value: 'hotel',
+        label: 'Hotel or Resort',
+        emoji: '🏨',
+        gradient: 'from-sky-400 to-blue-500',
+        desc: 'Reliable service, daily housekeeping. Classic hotel life without the all-in package',
+      },
+      {
+        value: 'rental',
+        label: 'Vacation Rental',
+        emoji: '🏠',
+        gradient: 'from-lime-400 to-green-500',
+        desc: 'Kitchen, space, real neighborhood. We live like locals',
+      },
+      {
+        value: 'any',
+        label: 'No Strong Preference',
+        emoji: '✨',
+        gradient: 'from-violet-400 to-purple-500',
+        desc: 'We care more about the destination. Whatever fits best for this trip',
+      },
+    ],
   },
 ];
 
@@ -139,6 +154,9 @@ export default function VibeCards({ selections, onChange }: VibeCardsProps) {
 
       {VIBE_PAIRS.map((pair, pairIdx) => {
         const selected = selections[pair.key];
+        // Unify: multi-option pairs use `options`, binary pairs use left + right
+        const optionList: VibeOption[] = pair.options ?? [pair.left!, pair.right!];
+
         return (
           <motion.div
             key={pair.key}
@@ -150,7 +168,7 @@ export default function VibeCards({ selections, onChange }: VibeCardsProps) {
               {pair.question}
             </p>
             <div className="grid grid-cols-2 gap-3">
-              {[pair.left, pair.right].map((option) => {
+              {optionList.map((option) => {
                 const isSelected = selected === option.value;
                 const isOtherSelected = selected && selected !== option.value;
                 return (

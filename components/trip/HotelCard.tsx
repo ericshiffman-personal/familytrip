@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import { HotelRecommendation, SavedHotel, TripInputs, Destination } from '@/types';
 
 interface HotelCardProps {
   recommendation: HotelRecommendation;
   savedHotel?: SavedHotel;
+  photoUrl?: string;
   tripInputs: TripInputs;
   destination: Destination;
   onSave: (hotel: SavedHotel) => void;
@@ -24,6 +26,7 @@ const TYPE_LABELS: Record<HotelRecommendation['type'], string> = {
 export default function HotelCard({
   recommendation: r,
   savedHotel,
+  photoUrl,
   tripInputs,
   destination,
   onSave,
@@ -135,16 +138,42 @@ export default function HotelCard({
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="card p-5 space-y-4"
+      className="card overflow-hidden"
     >
-      {/* Header */}
+      {/* Real hotel photo from Google Places — only shown when available */}
+      {photoUrl && (
+        <div className="relative h-44 w-full overflow-hidden">
+          <Image
+            src={photoUrl}
+            alt={r.name}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 640px"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          <div className="absolute bottom-3 left-4 right-4">
+            <p className="text-white font-display font-bold text-lg leading-tight drop-shadow">{r.name}</p>
+            <p className="text-white/75 text-xs mt-0.5">{r.neighborhood}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="p-5 space-y-4">
+      {/* Header — name/neighborhood shown here when no photo, otherwise shown in photo overlay */}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <span className="text-xs font-bold text-coral uppercase tracking-widest">Our Pick</span>
-          <h3 className="font-display font-bold text-navy text-xl mt-1 leading-tight">{r.name}</h3>
-          <p className="text-sm text-ink-muted mt-0.5">
-            {TYPE_LABELS[r.type]} · {r.neighborhood}
-          </p>
+          {!photoUrl && (
+            <>
+              <h3 className="font-display font-bold text-navy text-xl mt-1 leading-tight">{r.name}</h3>
+              <p className="text-sm text-ink-muted mt-0.5">
+                {TYPE_LABELS[r.type]} · {r.neighborhood}
+              </p>
+            </>
+          )}
+          {photoUrl && (
+            <p className="text-sm text-ink-muted mt-0.5">{TYPE_LABELS[r.type]}</p>
+          )}
         </div>
         <span className="text-sm font-semibold text-ink-muted bg-cream px-2 py-1 rounded-lg flex-shrink-0">
           {r.priceRange}
@@ -292,6 +321,7 @@ export default function HotelCard({
           </motion.div>
         )}
       </AnimatePresence>
+      </div>{/* end p-5 wrapper */}
     </motion.div>
   );
 }

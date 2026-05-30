@@ -18,7 +18,7 @@ export interface VibeSelections {
   pace?: 'relaxed' | 'adventure';
   transport?: 'fly' | 'drive';
   geography?: 'international' | 'domestic';
-  accommodation?: 'allinclusive' | 'rental';
+  accommodation?: 'allinclusive' | 'hotel' | 'rental' | 'any';
 }
 
 export interface TripInputs {
@@ -172,5 +172,6 @@ export interface HotelData {
   slug: string;
   recommendation: HotelRecommendation;
   savedHotel?: SavedHotel;      // undefined until user marks as booked
+  photoUrl?: string;            // Google Places photo URL, fetched after recommendation
   generatedAt: string;
 }

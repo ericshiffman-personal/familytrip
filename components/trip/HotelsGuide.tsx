@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { TripInputs, Destination, HotelData, SavedHotel } from '@/types';
+import { isPlacesCapped, incrementPlacesCount, incrementSession, getPlacesUsageSummary, isAdminMode } from '@/lib/placesUsage';
 import HotelCard from './HotelCard';
 
 interface HotelsGuideProps {
@@ -23,6 +24,7 @@ export default function HotelsGuide({
   const fetchRecommendation = async () => {
     setLoading(true);
     setError(null);
+    incrementSession(); // count every recommendation request for per-session analytics
     try {
       const res = await fetch('/api/hotels', {
         method: 'POST',
@@ -31,6 +33,8 @@ export default function HotelsGuide({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to load hotel recommendation');
+
+      // Show recommendation immediately — don't wait for photo
       const newData: HotelData = {
         slug: destination.slug,
         recommendation: data.recommendation,
@@ -38,10 +42,34 @@ export default function HotelsGuide({
         generatedAt: new Date().toISOString(),
       };
       onHotelDataChange(newData);
+
+      // Fetch photo in background — skip if monthly cap reached
+      if (!isPlacesCapped()) {
+        fetchPhoto(newData, data.recommendation.name);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load recommendation. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPhoto = async (baseData: HotelData, hotelName: string) => {
+    try {
+      const res = await fetch('/api/places-photo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: hotelName, location: destination.name }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.limitReached) return; // server-side cap hit
+      if (data.photoUrl) {
+        incrementPlacesCount();
+        onHotelDataChange({ ...baseData, photoUrl: data.photoUrl });
+      }
+    } catch {
+      // Photo fetch failed — card renders text-only, which is fine
     }
   };
 
@@ -55,6 +83,10 @@ export default function HotelsGuide({
     const { savedHotel: _, ...rest } = hotelData;
     onHotelDataChange({ ...rest });
   };
+
+  // Usage summary — only rendered when isAdminMode() is true (your browser only)
+  const adminMode = isAdminMode();
+  const usage = adminMode ? getPlacesUsageSummary() : null;
 
   // ── Loading ───────────────────────────────────────────────────────
   if (loading) {
@@ -114,6 +146,7 @@ export default function HotelsGuide({
       <HotelCard
         recommendation={hotelData.recommendation}
         savedHotel={hotelData.savedHotel}
+        photoUrl={hotelData.photoUrl}
         tripInputs={tripInputs}
         destination={destination}
         onSave={handleSave}
@@ -124,6 +157,28 @@ export default function HotelsGuide({
         Hotel names are Claude&apos;s best knowledge. Verify the property is current before booking.
         Search links open {hotelData.recommendation.bookingPlatform === 'airbnb' ? 'Airbnb' : 'Booking.com'} with your family size pre-filled.
       </p>
+
+      {/* Admin-only usage panel — only visible in your browser after running:
+           localStorage.setItem('tinysuitcase_admin', '1') in the console */}
+      {adminMode && usage && (
+        <div className={`text-xs rounded-lg px-3 py-2.5 space-y-1 border font-mono ${
+          usage.status === 'capped'   ? 'bg-red-50 text-red-700 border-red-200' :
+          usage.status === 'warning'  ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                                        'bg-navy-light text-navy border-navy/20'
+        }`}>
+          <p className="font-semibold not-font-mono text-[11px] uppercase tracking-wide mb-1">
+            📷 Places API — admin
+          </p>
+          <p>This month: {usage.count} / {usage.limit} ({usage.percentUsed}%)
+            {usage.status === 'capped' && ' 🚫 CAPPED'}
+            {usage.status === 'warning' && ' ⚠️'}
+          </p>
+          <p>Lifetime: {usage.totalPhotos} photos · {usage.totalSessions} requests · avg {usage.avgPhotosPerSession}/session</p>
+          {usage.firstUsed && (
+            <p>First used: {new Date(usage.firstUsed).toLocaleDateString()}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

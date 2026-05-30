@@ -185,7 +185,10 @@ export default function TripPage() {
       {/* Hero header */}
       <div className={`relative bg-gradient-to-br ${destination.heroGradient} overflow-hidden`}
            style={{ minHeight: '160px' }}>
-        {/* Photo fades in over gradient when ready */}
+        {/* Always-on dark overlay — ensures white text is readable over any gradient */}
+        <div className="absolute inset-0 bg-black/40" />
+
+        {/* Photo fades in over gradient + overlay when ready */}
         {heroPhoto && (
           <div className="absolute inset-0">
             <Image

@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RestaurantRecommendation, SavedRestaurant, RestaurantStatus } from '@/types';
 
@@ -24,7 +23,6 @@ export default function RestaurantCard({
   onMarkBooked,
   onRemove,
 }: RestaurantCardProps) {
-  const [photo, setPhoto] = useState<{ url: string; photographer: string } | null>(null);
   const [bookingNote, setBookingNote] = useState(savedEntry?.bookingNote ?? '');
   const [showBookingField, setShowBookingField] = useState(false);
   const [showDayPicker, setShowDayPicker] = useState(false);
@@ -33,15 +31,6 @@ export default function RestaurantCard({
   const isConsidering = savedEntry?.status === 'considering';
   const isFlexible = savedEntry?.status === 'flexible';
   const isSaved = !!savedEntry;
-
-  // Fetch a cuisine-type Unsplash photo (not destination-specific — gives better food imagery)
-  useEffect(() => {
-    const query = `${r.cuisineType} restaurant`;
-    fetch(`/api/photo?q=${encodeURIComponent(query)}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => { if (data) setPhoto(data); })
-      .catch(() => {});
-  }, [r.cuisineType]);
 
   const openTableUrl = `https://www.opentable.com/s?term=${encodeURIComponent(r.openTableQuery)}`;
 
@@ -62,23 +51,6 @@ export default function RestaurantCard({
       animate={{ opacity: 1, y: 0 }}
       className={`card overflow-hidden ${isSaved ? 'border-l-4 border-l-coral' : ''}`}
     >
-      {/* Photo strip */}
-      {photo && (
-        <div className="relative h-28 w-full overflow-hidden">
-          <Image
-            src={photo.url}
-            alt={`${r.cuisineType} restaurant`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 640px"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-          <p className="absolute bottom-1 right-2 text-white/50 text-[10px]">
-            {photo.photographer} / Unsplash
-          </p>
-        </div>
-      )}
-
       <div className="p-5 space-y-3">
         {/* Header row */}
         <div className="flex items-start justify-between gap-2">

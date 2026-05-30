@@ -40,7 +40,11 @@ function buildFamilyContext(inputs: TripInputs): string {
     vibes.pace && `They prefer ${vibes.pace === 'relaxed' ? 'slow, resort-style days with plenty of downtime' : 'adventure-packed days with lots of activities'}`,
     vibes.transport && `They ${vibes.transport === 'fly' ? 'are happy to fly' : 'prefer driving and a road trip experience'}`,
     vibes.geography && `They lean toward ${vibes.geography === 'international' ? 'an international destination' : 'staying within the US'}`,
-    vibes.accommodation && `They prefer ${vibes.accommodation === 'allinclusive' ? 'an all-inclusive resort where everything is handled' : 'a rental house where they can feel at home'}`,
+    vibes.accommodation && vibes.accommodation !== 'any' && `They prefer ${
+      vibes.accommodation === 'allinclusive' ? 'an all-inclusive resort where everything is handled' :
+      vibes.accommodation === 'hotel'        ? 'a traditional hotel or resort (not all-inclusive, not a rental)' :
+                                               'a vacation rental where they can feel at home'
+    }`,
   ].filter(Boolean).join('. ');
 
   return `
@@ -367,14 +371,17 @@ export function buildHotelPrompt(inputs: TripInputs, destination: Destination): 
   const familyContext = buildFamilyContext(inputs);
 
   const accommodationVibe = inputs.vibes.accommodation;
-  const isRental = accommodationVibe === 'rental';
+  const isRental       = accommodationVibe === 'rental';
   const isAllInclusive = accommodationVibe === 'allinclusive';
+  const isHotel        = accommodationVibe === 'hotel';
 
   const accommodationContext = isRental
-    ? 'This family prefers vacation rentals. Recommend a vacation rental, apartment, or house (NOT a hotel). They want to feel at home, not checked in.'
+    ? 'This family prefers vacation rentals. Recommend a vacation rental, apartment, or house (NOT a hotel or resort). They want to feel at home, not checked in.'
     : isAllInclusive
-    ? 'This family prefers all-inclusive resorts. Recommend a resort with meals and activities included. Convenience and having everything handled is the priority.'
-    : 'This family is open to any accommodation type. Recommend whatever genuinely fits best for a family at this destination: boutique hotel, apartment, or small resort.';
+    ? 'This family prefers all-inclusive resorts. Recommend a resort where meals and activities are included. Convenience and having everything handled is the priority — not a standard hotel.'
+    : isHotel
+    ? 'This family prefers a traditional hotel or non-all-inclusive resort. Recommend a hotel, boutique hotel, or standard resort. Do NOT recommend a vacation rental or all-inclusive package.'
+    : 'This family has no strong accommodation preference. Recommend whatever genuinely fits best for this destination and family: boutique hotel, standard resort, apartment, or vacation rental.';
 
   const bookingPlatform = isRental ? 'airbnb' : 'booking';
 
