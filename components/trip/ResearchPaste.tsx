@@ -66,7 +66,7 @@ export default function ResearchPaste({ tripInputs, destination }: ResearchPaste
             <div>
               <h3 className="font-semibold text-navy">Already done some research?</h3>
               <p className="text-ink-muted text-sm mt-1">
-                Paste in anything — TripAdvisor reviews, blog posts, notes, Reddit threads.
+                Paste in anything: TripAdvisor reviews, blog posts, notes, Reddit threads.
                 We&apos;ll organize it and flag anything worth double-checking.
               </p>
             </div>

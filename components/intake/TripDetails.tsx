@@ -118,7 +118,7 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
                 value: 'splurge',
                 label: "Let's splurge",
                 emoji: '🥂',
-                desc: 'This trip matters — we want the best experience.',
+                desc: 'This trip matters. We want the best experience.',
               },
             ] as const
           ).map((opt) => (
@@ -156,7 +156,7 @@ export default function TripDetails({ values, onChange }: TripDetailsProps) {
           className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors"
         />
         <p className="text-xs text-ink-muted mt-1.5">
-          This helps us filter by flight time — a 12-hour flight with a toddler is a different trip.
+          This helps us filter by flight time. A 12-hour flight with a toddler is a different trip.
         </p>
       </div>
 

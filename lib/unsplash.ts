@@ -50,8 +50,8 @@ export async function getUnsplashPhotos(query: string, count: number = 4): Promi
         altDescription: photo.alt_description as string | undefined,
         photographer: user.name,
         // utm params required by Unsplash API guidelines
-        photographerUrl: `https://unsplash.com/@${user.username}?utm_source=familytrip&utm_medium=referral`,
-        unsplashUrl: `https://unsplash.com?utm_source=familytrip&utm_medium=referral`,
+        photographerUrl: `https://unsplash.com/@${user.username}?utm_source=tinysuitcase&utm_medium=referral`,
+        unsplashUrl: `https://unsplash.com?utm_source=tinysuitcase&utm_medium=referral`,
       } as UnsplashPhoto;
     });
   } catch {

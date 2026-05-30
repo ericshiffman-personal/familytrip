@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { TripInputs, Child, Destination, NapDetails } from '@/types';
 import { loadProfile, saveTripInputs } from '@/lib/profile';
 import NapSection from '@/components/intake/NapSection';
+import { WordmarkLogo } from '@/components/shared/Logo';
 
 function toSlug(name: string): string {
   return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -128,9 +129,9 @@ export default function GoPage() {
     };
 
     saveTripInputs(inputs);
-    sessionStorage.setItem('familytrip_destination', JSON.stringify(dest));
+    sessionStorage.setItem('tinysuitcase_destination', JSON.stringify(dest));
     // Clear stale recommendations so the trip page doesn't pick up a previous session
-    sessionStorage.removeItem('familytrip_recommendations');
+    sessionStorage.removeItem('tinysuitcase_recommendations');
 
     router.push(`/trip/${slug}`);
   };
@@ -140,8 +141,8 @@ export default function GoPage() {
       {/* Nav */}
       <div className="bg-white border-b border-cream-dark px-6 py-4 sticky top-0 z-40">
         <div className="max-w-lg mx-auto flex items-center justify-between">
-          <Link href="/" className="font-display text-xl font-bold text-navy tracking-tight">
-            family<span className="text-coral">trip</span>
+          <Link href="/">
+            <WordmarkLogo height={32} />
           </Link>
           <Link href="/plan" className="text-sm text-ink-muted hover:text-ink transition-colors">
             Not sure where? ← Get a recommendation
@@ -157,7 +158,7 @@ export default function GoPage() {
             Already decided?
           </h1>
           <p className="text-ink-muted text-sm leading-relaxed">
-            Tell us where you&apos;re going and we&apos;ll build your itinerary and packing list — no recommendation step needed.
+            Tell us where you&apos;re going. We&apos;ll build your itinerary and packing list. No recommendation step needed.
           </p>
         </div>
 
@@ -262,7 +263,7 @@ export default function GoPage() {
           {profileLoaded && (
             <div className="bg-navy-light rounded-xl px-4 py-3 mb-5 text-xs text-navy flex items-center gap-2">
               <span>✓</span>
-              <span>Pre-filled from your saved profile — edit below if anything&apos;s changed.</span>
+              <span>Pre-filled from your saved profile. Edit below if anything&apos;s changed.</span>
             </div>
           )}
 

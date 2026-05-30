@@ -154,7 +154,7 @@ export default function RestaurantCard({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
-                  Considering — Day {savedEntry.dayNumber}
+                  Considering: Day {savedEntry.dayNumber}
                 </span>
                 <div className="flex gap-3">
                   <button
@@ -216,7 +216,7 @@ export default function RestaurantCard({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                  ✓ Booked — Day {savedEntry.dayNumber ?? 'flexible'}
+                  ✓ Booked: Day {savedEntry.dayNumber ?? 'flexible'}
                 </span>
                 <button
                   onClick={onRemove}

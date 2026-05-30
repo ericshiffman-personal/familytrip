@@ -58,7 +58,7 @@ export default function NapSection({
           <p className="font-semibold text-navy text-sm">Nap schedule check</p>
           <p className="text-ink-soft text-xs mt-0.5">
             {hasInfant
-              ? 'Nap logistics make or break a trip with a little one. Be specific — we\'ll plan around it.'
+              ? 'Nap logistics make or break a trip with a little one. Be specific and we\'ll plan around it.'
               : 'Does anyone still need a regular nap?'}
           </p>
         </div>
@@ -166,7 +166,7 @@ export default function NapSection({
       {napRequired && !hasInfant && (
         <div className="pt-1">
           <label className="text-xs font-medium text-ink-muted mb-1.5 block">
-            Typical nap window <span className="font-normal">(optional — helps us plan the itinerary)</span>
+            Typical nap window <span className="font-normal">(optional, helps us plan the itinerary)</span>
           </label>
           <input
             type="text"

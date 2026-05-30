@@ -1,7 +1,7 @@
 import { FamilyProfile, TripInputs } from '@/types';
 
-const PROFILE_KEY = 'familytrip_profile';
-const TRIP_INPUTS_KEY = 'familytrip_current_inputs';
+const PROFILE_KEY = 'tinysuitcase_profile';
+const TRIP_INPUTS_KEY = 'tinysuitcase_inputs';
 
 export function saveProfile(inputs: TripInputs): void {
   if (typeof window === 'undefined') return;

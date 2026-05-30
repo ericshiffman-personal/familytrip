@@ -113,7 +113,7 @@ export default function FamilyForm({
         </div>
 
         {children.length === 0 ? (
-          <p className="text-ink-muted text-sm italic">No children added yet — tap &quot;Add a child&quot; above</p>
+          <p className="text-ink-muted text-sm italic">No children added yet. Tap &quot;Add a child&quot; above.</p>
         ) : (
           <div className="space-y-3">
             {children.map((child, idx) => (

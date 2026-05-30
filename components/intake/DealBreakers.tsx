@@ -14,7 +14,7 @@ function getContextualExamples(vibes: VibeSelections): string[] {
   const examples: string[] = [];
 
   if (vibes.environment === 'beach') {
-    examples.push("Must have a calm beach — no strong waves or riptides");
+    examples.push("Must have a calm beach, no strong waves or riptides");
     examples.push("No seaweed or jellyfish problems");
     examples.push("Needs a pool as backup on rough beach days");
   } else if (vibes.environment === 'mountains') {
@@ -22,7 +22,7 @@ function getContextualExamples(vibes: VibeSelections): string[] {
     examples.push("Need to be able to loop back to the car easily");
     examples.push("No exposed heights or dangerous cliff paths");
   } else {
-    examples.push("Must have a calm beach — no strong waves");
+    examples.push("Must have a calm beach, no strong waves");
     examples.push("Trails must be manageable for young kids");
   }
 
@@ -38,18 +38,18 @@ function getContextualExamples(vibes: VibeSelections): string[] {
   }
 
   if (vibes.pace === 'relaxed') {
-    examples.push("No packed itineraries — we need breathing room");
+    examples.push("No packed itineraries, we need breathing room");
     examples.push("Must have easy food options close by");
   } else if (vibes.pace === 'adventure') {
     examples.push("No resort-only trips with nothing to do nearby");
-    examples.push("Needs variety — can't do the same thing two days in a row");
+    examples.push("Needs variety, can't do the same thing two days in a row");
   }
 
   if (vibes.accommodation === 'allinclusive') {
     examples.push("No hidden costs or nickel-and-diming");
     examples.push("Must have a real kids' program or club");
   } else if (vibes.accommodation === 'rental') {
-    examples.push("Must have a full kitchen — eating out every meal is too hard");
+    examples.push("Must have a full kitchen, eating out every meal is too hard");
   }
 
   examples.push("No crowds or tourist traps");
@@ -136,7 +136,7 @@ export default function DealBreakers({
         <span className="text-xl">✨</span>
         <p className="text-sm text-ink-soft">
           <strong className="text-navy">Almost there.</strong> After you hit submit, we&apos;ll take everything you&apos;ve
-          told us and come back with two confident recommendations — not a list of 40 options.
+          told us and come back with two confident recommendations, not a list of 40 options.
         </p>
       </div>
     </div>

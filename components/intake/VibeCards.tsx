@@ -49,7 +49,7 @@ const VIBE_PAIRS: VibePair[] = [
       label: 'Slow & Relaxed',
       emoji: '☀️',
       gradient: 'from-yellow-400 to-orange-400',
-      desc: 'Pool time, naps, no agenda — pure decompression',
+      desc: 'Pool time, naps, no agenda. Pure decompression.',
     },
     right: {
       value: 'adventure',
@@ -133,7 +133,7 @@ export default function VibeCards({ selections, onChange }: VibeCardsProps) {
       <div className="text-center">
         <h2 className="font-display text-2xl font-bold text-navy mb-2">What&apos;s your vibe?</h2>
         <p className="text-ink-muted text-sm">
-          Pick your instinct — no overthinking. ({answeredCount}/{totalPairs} answered)
+          Pick your instinct, no overthinking. ({answeredCount}/{totalPairs} answered)
         </p>
       </div>
 

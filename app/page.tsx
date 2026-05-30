@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getUnsplashPhoto } from "@/lib/unsplash";
 import type { UnsplashPhoto } from "@/lib/unsplash";
+import { WordmarkLogo, WordmarkLogoWhite } from "@/components/shared/Logo";
 
 // Vacation style photos — fetched server-side, cached 24h.
 // Four distinct trip archetypes to spark the right mental image.
@@ -26,10 +27,8 @@ export default async function Home() {
     <main className="flex flex-col min-h-screen bg-cream">
 
       {/* ── Nav ────────────────────────────────────────────────────── */}
-      <nav className="px-6 py-4 flex items-center justify-between border-b border-cream-dark bg-white sticky top-0 z-50">
-        <span className="font-display text-xl font-bold text-navy tracking-tight">
-          family<span className="text-coral">trip</span>
-        </span>
+      <nav className="px-6 py-3 flex items-center justify-between border-b border-cream-dark bg-white sticky top-0 z-50">
+        <WordmarkLogo height={36} />
         <Link href="/plan" className="text-sm font-semibold text-coral hover:text-coral-dark transition-colors">
           Start planning →
         </Link>
@@ -46,17 +45,17 @@ export default async function Home() {
           </h1>
           <p className="text-ink-soft text-lg mb-10 max-w-md mx-auto leading-relaxed">
             Tell us about your family. We&apos;ll give you a confident recommendation,
-            explain every tradeoff honestly, and build a plan around your actual kids —
+            explain every tradeoff honestly, and build a plan around your actual kids,
             nap schedules and all.
           </p>
           <Link
             href="/plan"
             className="inline-flex items-center gap-2 bg-coral hover:bg-coral-dark text-white font-semibold text-base px-8 py-4 rounded-xl transition-colors shadow-lg shadow-coral/20"
           >
-            Plan our trip — it&apos;s free →
+            Plan my trip →
           </Link>
           <p className="mt-5 text-sm text-ink-muted">
-            No account needed · About 2 minutes ·{' '}
+            No account needed · About 2 minutes · It&apos;s free ·{' '}
             <Link href="/go" className="text-coral hover:text-coral-dark transition-colors underline underline-offset-2">
               Already know where you&apos;re going?
             </Link>
@@ -133,7 +132,7 @@ export default async function Home() {
             <p className="text-ink-soft text-sm leading-relaxed mb-6">
               It fits your direct-flight constraint, gives you more weather certainty,
               and has better nap-friendly hotel options for a 3-year-old.
-              Vancouver is the more interesting trip — but for your stated priorities,
+              Vancouver is the more interesting trip, but for your stated priorities,
               San Diego is the better family vacation right now.
             </p>
 
@@ -194,7 +193,7 @@ export default async function Home() {
               {
                 step: "02",
                 title: "We make the call",
-                desc: "Two options. A primary pick and an alternative. Both explained specifically for your family — not \"great for families\" platitudes.",
+                desc: "Two options. A primary pick and an alternative. Both explained specifically for your family, not \"great for families\" platitudes.",
               },
               {
                 step: "03",
@@ -239,15 +238,16 @@ export default async function Home() {
           href="/plan"
           className="inline-flex items-center gap-2 bg-white text-coral font-bold text-base px-8 py-4 rounded-xl hover:bg-cream transition-colors"
         >
-          Start planning — it&apos;s free →
+          Start planning, it&apos;s free →
         </Link>
       </section>
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
       <footer className="bg-navy px-6 py-8 text-center">
-        <p className="text-white/30 text-sm">
-          family<span className="text-coral/60">trip</span> · Opinionated travel planning for real families
-        </p>
+        <div className="flex flex-col items-center gap-2">
+          <WordmarkLogoWhite height={28} />
+          <p className="text-white/30 text-xs">Plan around naps, snacks, and real life.</p>
+        </div>
       </footer>
 
     </main>

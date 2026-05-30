@@ -4,16 +4,17 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { WordmarkLogo } from '@/components/shared/Logo';
 import { loadTripInputs } from '@/lib/profile';
 import { TripInputs, RecommendationResponse } from '@/types';
 import DestinationCard from '@/components/results/DestinationCard';
 
 const LOADING_MESSAGES = [
-  "Reading your deal-breakers carefully... 🤔",
-  "Thinking about nap windows and logistics... 😴",
-  "Checking flight times from your city... ✈️",
-  "Weighing what parents actually complain about... 📋",
-  "Making the call... ✨",
+  "Packing the tiny suitcase…",
+  "Checking nap math…",
+  "Finding the lower-friction option…",
+  "Building a trip that doesn't require superhero stamina…",
+  "Sorting the hotel chaos…",
 ];
 
 export default function ResultsPage() {
@@ -31,7 +32,7 @@ export default function ResultsPage() {
 
     // Restore cached recommendations if we're navigating back — avoids
     // re-calling the API when the user returns from the trip page.
-    const cached = sessionStorage.getItem('familytrip_recommendations');
+    const cached = sessionStorage.getItem('tinysuitcase_recommendations');
     if (cached) {
       try {
         setRecommendations(JSON.parse(cached));
@@ -59,7 +60,7 @@ export default function ResultsPage() {
       });
       if (!res.ok) throw new Error('Failed to get recommendations');
       const data = await res.json();
-      sessionStorage.setItem('familytrip_recommendations', JSON.stringify(data));
+      sessionStorage.setItem('tinysuitcase_recommendations', JSON.stringify(data));
       setRecommendations(data);
     } catch (err) {
       setError('Something went wrong. Please try again.');
@@ -83,7 +84,6 @@ export default function ResultsPage() {
     return (
       <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-6">
         <div className="text-center max-w-md">
-          <div className="text-5xl mb-6">🗺️</div>
           <h2 className="font-display text-2xl font-bold text-navy mb-3">
             {overrideLoading ? 'Rethinking the plan...' : 'Making the call...'}
           </h2>
@@ -125,8 +125,8 @@ export default function ResultsPage() {
       {/* Header */}
       <div className="bg-white border-b border-cream-dark px-6 py-4 sticky top-0 z-40">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <Link href="/" className="font-display text-xl font-bold text-navy">
-            family<span className="text-coral">trip</span>
+          <Link href="/">
+            <WordmarkLogo height={32} />
           </Link>
           <Link href="/plan" className="text-sm text-ink-muted hover:text-ink transition-colors">
             ← Start over

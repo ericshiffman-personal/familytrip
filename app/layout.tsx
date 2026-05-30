@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FamilyTrip — We'll make the call.",
+  title: "Tiny Suitcase: Plan the family trip.",
   description:
-    "The travel planner for families who overthink everything. Tell us about your family — we'll give you a confident recommendation, explain every tradeoff, and build the full plan.",
+    "AI-powered family trip planning built around naps, meals, hotel realities, and the way your family actually travels. Get a realistic itinerary, one opinionated hotel pick, restaurant ideas, and a packing list.",
   openGraph: {
-    title: "FamilyTrip — We'll make the call.",
-    description: "Opinionated travel planning for real families.",
+    title: "Tiny Suitcase: Plan the family trip.",
+    description: "Plan around naps, snacks, and real life.",
     type: "website",
   },
 };

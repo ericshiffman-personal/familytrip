@@ -6,7 +6,7 @@ import RestaurantCard from './RestaurantCard';
 
 const CUISINE_OPTIONS: { value: DiningPreferences['cuisineVibe']; label: string; desc: string }[] = [
   { value: 'local',       label: 'Local classics',     desc: 'Regional spots the locals love' },
-  { value: 'italian',     label: 'Italian / Med',      desc: 'Pasta, pizza, seafood — kid-friendly flavors' },
+  { value: 'italian',     label: 'Italian / Med',      desc: 'Pasta, pizza, seafood. Kid-friendly flavors.' },
   { value: 'asian',       label: 'Asian',              desc: 'Japanese, Thai, Vietnamese, Chinese' },
   { value: 'american',    label: 'American comfort',   desc: 'Burgers, BBQ, familiar for picky eaters' },
   { value: 'adventurous', label: 'Anything goes',      desc: "We're up for trying something new" },
@@ -223,7 +223,6 @@ export default function DiningGuide({
   if (loading) {
     return (
       <div className="text-center py-16">
-        <div className="text-4xl mb-3 animate-bounce">🍽️</div>
         <p className="text-ink-muted text-sm">Finding restaurants that work for your family...</p>
       </div>
     );
@@ -271,12 +270,12 @@ export default function DiningGuide({
             <span>
               <strong>{bookedCount} dinner{bookedCount > 1 ? 's' : ''} booked</strong>
               {plannedCount > bookedCount && `, ${plannedCount - bookedCount} more in consideration`}
-              {' — '}check your Itinerary tab to see them.
+              {', '}check your Itinerary tab to see them.
             </span>
           ) : (
             <span>
               <strong>{plannedCount} dinner{plannedCount > 1 ? 's' : ''} in consideration</strong>
-              {' — '}check your Itinerary tab to see them.
+              {', '}check your Itinerary tab to see them.
             </span>
           )}
         </div>

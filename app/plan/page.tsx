@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { WordmarkLogo } from '@/components/shared/Logo';
 import { TripInputs, VibeSelections, Child } from '@/types';
 import { saveTripInputs, saveProfile } from '@/lib/profile';
 import ProgressSteps from '@/components/shared/ProgressSteps';
@@ -69,8 +70,8 @@ export default function PlanPage() {
       {/* Header */}
       <div className="bg-white border-b border-cream-dark px-6 py-4 sticky top-0 z-40">
         <div className="max-w-lg mx-auto flex items-center justify-between">
-          <Link href="/" className="font-display text-xl font-bold text-navy tracking-tight">
-            family<span className="text-coral">trip</span>
+          <Link href="/">
+            <WordmarkLogo height={32} />
           </Link>
           <span className="text-sm text-ink-muted">
             Step {step} of {TOTAL_STEPS}

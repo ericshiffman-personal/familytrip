@@ -1,6 +1,6 @@
 import { HotelData } from '@/types';
 
-const bankKey = (slug: string) => `familytrip_hotel_${slug}`;
+const bankKey = (slug: string) => `tinysuitcase_hotel_${slug}`;
 
 export function loadHotelData(slug: string): HotelData | null {
   if (typeof window === 'undefined') return null;

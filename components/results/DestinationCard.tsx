@@ -208,7 +208,7 @@ export default function DestinationCard({
               : 'bg-navy hover:bg-navy-mid text-white'
           }`}
         >
-          {isPrimary ? `Yes — let's go to ${destination.name} →` : `Actually, let's do ${destination.name} →`}
+          {isPrimary ? `Yes, let's go to ${destination.name} →` : `Actually, let's do ${destination.name} →`}
         </motion.button>
 
         {/* Override buttons */}

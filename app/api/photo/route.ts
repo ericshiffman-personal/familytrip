@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
       {
         url: photo.urls.regular,
         photographer: photo.user.name,
-        photographerUrl: `https://unsplash.com/@${photo.user.username}?utm_source=familytrip&utm_medium=referral`,
-        unsplashUrl: `https://unsplash.com?utm_source=familytrip&utm_medium=referral`,
+        photographerUrl: `https://unsplash.com/@${photo.user.username}?utm_source=tinysuitcase&utm_medium=referral`,
+        unsplashUrl: `https://unsplash.com?utm_source=tinysuitcase&utm_medium=referral`,
         altDescription: photo.alt_description ?? null,
       },
       {

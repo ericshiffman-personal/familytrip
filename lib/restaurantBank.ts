@@ -1,6 +1,6 @@
 import { DiningData, SavedRestaurant } from '@/types';
 
-const bankKey = (slug: string) => `familytrip_dining_${slug}`;
+const bankKey = (slug: string) => `tinysuitcase_dining_${slug}`;
 
 export function loadDiningData(slug: string): DiningData | null {
   if (typeof window === 'undefined') return null;

@@ -60,7 +60,6 @@ export default function HotelsGuide({
   if (loading) {
     return (
       <div className="text-center py-16">
-        <div className="text-4xl mb-3 animate-bounce">🏨</div>
         <p className="text-ink-muted text-sm">Finding the right home base for your family...</p>
       </div>
     );
@@ -71,10 +70,9 @@ export default function HotelsGuide({
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <div className="text-4xl mb-3">🏨</div>
           <h2 className="font-display text-xl font-bold text-navy mb-2">Your home base</h2>
           <p className="text-ink-muted text-sm leading-relaxed max-w-sm mx-auto">
-            Where you stay shapes everything — the neighborhood sets your walking radius,
+            Where you stay shapes everything. The neighborhood sets your walking radius,
             the room layout determines whether nap time works, and the right amenities
             mean parents actually survive the trip.
           </p>
@@ -123,7 +121,7 @@ export default function HotelsGuide({
       />
 
       <p className="text-xs text-ink-muted text-center leading-relaxed px-4">
-        Hotel names are Claude&apos;s best knowledge — verify the property is current before booking.
+        Hotel names are Claude&apos;s best knowledge. Verify the property is current before booking.
         Search links open {hotelData.recommendation.bookingPlatform === 'airbnb' ? 'Airbnb' : 'Booking.com'} with your family size pre-filled.
       </p>
     </div>

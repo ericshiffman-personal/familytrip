@@ -45,7 +45,7 @@ export default function TripPage() {
     setTripInputs(inputs);
 
     // 1. Check full recommendations (normal flow)
-    const recRaw = sessionStorage.getItem('familytrip_recommendations');
+    const recRaw = sessionStorage.getItem('tinysuitcase_recommendations');
     if (recRaw) {
       try {
         const rec: RecommendationResponse = JSON.parse(recRaw);
@@ -57,7 +57,7 @@ export default function TripPage() {
     }
 
     // 2. Check fast-path destination (user came from /go)
-    const fastpathRaw = sessionStorage.getItem('familytrip_destination');
+    const fastpathRaw = sessionStorage.getItem('tinysuitcase_destination');
     if (fastpathRaw) {
       try {
         const dest: Destination = JSON.parse(fastpathRaw);
@@ -173,7 +173,6 @@ export default function TripPage() {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl mb-3 animate-pulse">🗺️</div>
           <p className="text-ink-muted text-sm">Loading your trip...</p>
         </div>
       </div>
@@ -255,7 +254,6 @@ export default function TripPage() {
           <div>
             {itineraryLoading && (
               <div className="text-center py-16">
-                <div className="text-4xl mb-3 animate-bounce">📅</div>
                 <p className="text-ink-muted text-sm">Building your day-by-day plan...</p>
               </div>
             )}
@@ -311,8 +309,7 @@ export default function TripPage() {
           <div>
             {packingLoading && (
               <div className="text-center py-16">
-                <div className="text-4xl mb-3 animate-bounce">🧳</div>
-                <p className="text-ink-muted text-sm">Building your personalized packing list...</p>
+                <p className="text-ink-muted text-sm">Building your packing list...</p>
               </div>
             )}
             {packingError && (
@@ -338,7 +335,7 @@ export default function TripPage() {
             <div className="mb-5">
               <h2 className="font-display text-xl font-bold text-navy mb-1">Your research</h2>
               <p className="text-ink-muted text-sm">
-                Been down the TripAdvisor rabbit hole? Paste everything here — we&apos;ll organize it for you.
+                Been down the TripAdvisor rabbit hole? Paste everything here and we&apos;ll organize it for you.
               </p>
             </div>
             <ResearchPaste tripInputs={tripInputs} destination={destination} />
