@@ -189,6 +189,11 @@ export default function ResultsPage() {
           Recommendations are based on our knowledge of these destinations.
           Use the itinerary&apos;s verify step before booking anything time-sensitive.
         </motion.p>
+        <p className="text-center text-xs text-ink-muted mt-3 pb-4">
+          <a href="/privacy" className="hover:underline">Privacy Policy</a>
+          {' · '}
+          <a href="/terms" className="hover:underline">Terms of Use</a>
+        </p>
       </div>
     </div>
   );

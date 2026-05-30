@@ -250,9 +250,14 @@ export default async function Home() {
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
       <footer className="bg-navy px-6 py-8 text-center">
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-3">
           <WordmarkLogoWhite height={28} />
           <p className="text-white/30 text-xs">Plan around naps, snacks, and real life.</p>
+          <div className="flex items-center gap-3 text-white/30 text-xs mt-1">
+            <Link href="/privacy" className="hover:text-white/60 transition-colors">Privacy Policy</Link>
+            <span>·</span>
+            <Link href="/terms" className="hover:text-white/60 transition-colors">Terms of Use</Link>
+          </div>
         </div>
       </footer>
 

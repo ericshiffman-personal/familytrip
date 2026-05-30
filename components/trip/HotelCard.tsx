@@ -151,10 +151,19 @@ export default function HotelCard({
             sizes="(max-width: 768px) 100vw, 640px"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          {/* Hotel name / neighborhood overlay */}
           <div className="absolute bottom-3 left-4 right-4">
             <p className="text-white font-display font-bold text-lg leading-tight drop-shadow">{r.name}</p>
             <p className="text-white/75 text-xs mt-0.5">{r.neighborhood}</p>
           </div>
+          {/* Required Google Places attribution */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://maps.gstatic.com/mapfiles/api-3/images/powered-by-google-on-non-white3.png"
+            alt="Powered by Google"
+            className="absolute top-2 right-2 h-4 opacity-80"
+            style={{ height: 16 }}
+          />
         </div>
       )}
 
