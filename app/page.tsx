@@ -28,7 +28,7 @@ export default async function Home() {
 
       {/* ── Nav ────────────────────────────────────────────────────── */}
       <nav className="px-6 py-3 flex items-center justify-between border-b border-cream-dark bg-white sticky top-0 z-50">
-        <WordmarkLogo height={36} />
+        <WordmarkLogo height={44} />
         <Link href="/plan" className="text-sm font-semibold text-coral hover:text-coral-dark transition-colors">
           Start planning →
         </Link>

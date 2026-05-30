@@ -71,7 +71,7 @@ export default function PlanPage() {
       <div className="bg-white border-b border-cream-dark px-6 py-4 sticky top-0 z-40">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <Link href="/">
-            <WordmarkLogo height={32} />
+            <WordmarkLogo height={38} />
           </Link>
           <span className="text-sm text-ink-muted">
             Step {step} of {TOTAL_STEPS}

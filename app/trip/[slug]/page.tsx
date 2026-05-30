@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { IconMarkWhite } from '@/components/shared/Logo';
 import { loadTripInputs } from '@/lib/profile';
 import { loadDiningData, saveDiningData } from '@/lib/restaurantBank';
 import { loadHotelData, saveHotelData } from '@/lib/hotelBank';
@@ -199,12 +200,17 @@ export default function TripPage() {
           </div>
         )}
         <div className="relative z-10 px-6 py-10 max-w-2xl mx-auto">
-          <Link
-            href={isFastPath ? '/go' : '/results'}
-            className="text-white/60 text-sm hover:text-white transition-colors mb-5 inline-block"
-          >
-            {isFastPath ? '← Change destination' : '← Back to options'}
-          </Link>
+          <div className="flex items-center justify-between mb-5">
+            <Link
+              href={isFastPath ? '/go' : '/results'}
+              className="text-white/60 text-sm hover:text-white transition-colors"
+            >
+              {isFastPath ? '← Change destination' : '← Back to options'}
+            </Link>
+            <Link href="/" aria-label="Tiny Suitcase home">
+              <IconMarkWhite size={32} className="opacity-70 hover:opacity-100 transition-opacity" />
+            </Link>
+          </div>
           <h1 className="font-display text-3xl font-bold text-white mb-1">{destination.name}</h1>
           <p className="text-white/70 text-sm">{destination.tagline}</p>
           {hotelData?.savedHotel && (

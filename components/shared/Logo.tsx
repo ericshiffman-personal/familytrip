@@ -2,7 +2,8 @@
 // 800 renders correctly from the page font (external <img> SVGs can't access page fonts).
 
 // ─── Color wordmark (light backgrounds) ──────────────────────────────────────
-// Ratio is 600:150 = 4:1. Default height 40px → width 160px.
+// ViewBox is 660×150 (wider than the source 600 to prevent "e" clipping —
+// Playfair Display 800 renders slightly wider in-browser than in design tools).
 export function WordmarkLogo({
   className,
   height = 40,
@@ -10,13 +11,13 @@ export function WordmarkLogo({
   className?: string;
   height?: number;
 }) {
-  const width = height * 4;
+  const width = Math.round(height * 4.4); // 660/150 = 4.4
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={width}
       height={height}
-      viewBox="0 0 600 150"
+      viewBox="0 0 660 150"
       aria-label="Tiny Suitcase"
       className={className}
     >
@@ -70,13 +71,13 @@ export function WordmarkLogoWhite({
   className?: string;
   height?: number;
 }) {
-  const width = height * 4;
+  const width = Math.round(height * 4.4);
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={width}
       height={height}
-      viewBox="0 0 600 150"
+      viewBox="0 0 660 150"
       aria-label="Tiny Suitcase"
       className={className}
     >

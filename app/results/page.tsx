@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { WordmarkLogo } from '@/components/shared/Logo';
+import { WordmarkLogo, IconMark } from '@/components/shared/Logo';
 import { loadTripInputs } from '@/lib/profile';
 import { TripInputs, RecommendationResponse } from '@/types';
 import DestinationCard from '@/components/results/DestinationCard';
@@ -84,6 +84,13 @@ export default function ResultsPage() {
     return (
       <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-6">
         <div className="text-center max-w-md">
+          <motion.div
+            animate={{ scale: [1, 1.06, 1] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+            className="flex justify-center mb-8"
+          >
+            <IconMark size={72} />
+          </motion.div>
           <h2 className="font-display text-2xl font-bold text-navy mb-3">
             {overrideLoading ? 'Rethinking the plan...' : 'Making the call...'}
           </h2>
@@ -126,7 +133,7 @@ export default function ResultsPage() {
       <div className="bg-white border-b border-cream-dark px-6 py-4 sticky top-0 z-40">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <Link href="/">
-            <WordmarkLogo height={32} />
+            <WordmarkLogo height={38} />
           </Link>
           <Link href="/plan" className="text-sm text-ink-muted hover:text-ink transition-colors">
             ← Start over
