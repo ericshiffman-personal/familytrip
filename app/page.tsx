@@ -46,7 +46,7 @@ export default async function Home() {
           <p className="text-ink-soft text-lg mb-10 max-w-md mx-auto leading-relaxed">
             Tell us about your family. We&apos;ll give you a confident recommendation,
             explain every tradeoff honestly, and build a plan around your actual kids,
-            nap schedules and all.
+            nap schedules and&nbsp;all.
           </p>
           <Link
             href="/plan"
