@@ -55,9 +55,15 @@ export default async function Home() {
             Plan my trip →
           </Link>
           <p className="mt-5 text-sm text-ink-muted">
-            No account needed · About 2 minutes · It&apos;s free ·{' '}
+            No account needed · About 2 minutes · It&apos;s free
+          </p>
+          <p className="mt-2 text-sm text-ink-muted">
             <Link href="/go" className="text-coral hover:text-coral-dark transition-colors underline underline-offset-2">
               Already know where you&apos;re going?
+            </Link>
+            {' · '}
+            <Link href="/choose" className="text-coral hover:text-coral-dark transition-colors underline underline-offset-2">
+              Narrowed it down to 2?
             </Link>
           </p>
         </div>

@@ -37,6 +37,9 @@ export interface TripInputs {
   dealBreakers: string;
   previousBadExperience?: string;
   dietaryRestrictions: string[];  // e.g. ["Vegetarian", "Nut allergy"]
+  // "Narrowed it down to 2" flow: user-specified destinations to compare head-to-head
+  destinationA?: string;
+  destinationB?: string;
 }
 
 export interface TradeoffChip {

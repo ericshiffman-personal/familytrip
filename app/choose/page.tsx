@@ -3,14 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TripInputs, Child, Destination, NapDetails } from '@/types';
+import { TripInputs, Child, NapDetails } from '@/types';
 import { loadProfile, saveTripInputs } from '@/lib/profile';
 import NapSection from '@/components/intake/NapSection';
 import { WordmarkLogo } from '@/components/shared/Logo';
-
-function toSlug(name: string): string {
-  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-}
 
 const MONTHS = [
   'January', 'February', 'March', 'April',
@@ -25,15 +21,28 @@ const DURATION_OPTIONS = [
   { value: '10+ days', label: '10+ days', desc: 'Big trip' },
 ] as const;
 
-export default function GoPage() {
+const BUDGET_OPTIONS = [
+  { value: 'budget',      label: 'Budget',      desc: 'Watching costs carefully'        },
+  { value: 'comfortable', label: 'Comfortable',  desc: 'Spending freely, not extravagant' },
+  { value: 'splurge',     label: 'Splurge',      desc: 'Worth paying for the right thing' },
+] as const;
+
+const DIETARY_CHIPS = [
+  'None', 'Vegetarian', 'Vegan', 'Gluten-free', 'Nut allergy', 'Shellfish allergy',
+] as const;
+
+export default function ChoosePage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
 
-  // Destination fields
-  const [destinationName, setDestinationName] = useState('');
-  const [activities, setActivities] = useState('');
+  // The two destinations
+  const [destA, setDestA] = useState('');
+  const [destB, setDestB] = useState('');
+
+  // Trip details
   const [duration, setDuration] = useState<TripInputs['duration']>('5-7 days');
   const [travelMonth, setTravelMonth] = useState('');
+  const [budget, setBudget] = useState<TripInputs['budget']>('comfortable');
 
   // Family fields — pre-filled from saved profile if available
   const [adults, setAdults] = useState(2);
@@ -46,10 +55,6 @@ export default function GoPage() {
   const [dealBreakers, setDealBreakers] = useState('');
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
   const [profileLoaded, setProfileLoaded] = useState(false);
-
-  const DIETARY_CHIPS = [
-    'None', 'Vegetarian', 'Vegan', 'Gluten-free', 'Nut allergy', 'Shellfish allergy',
-  ] as const;
 
   const toggleDietary = (chip: string) => {
     if (chip === 'None') { setDietaryRestrictions([]); return; }
@@ -68,48 +73,22 @@ export default function GoPage() {
       setChildren(profile.children);
       setNapRequired(profile.napRequired);
       setNapSchedule(profile.napSchedule || '');
-      // napDetails not currently stored in profile — user fills in fresh each session
       setProfileLoaded(true);
     }
   }, []);
 
   const hasYoungChild = children.some((c) => c.age <= 5);
   const hasInfant     = children.some((c) => c.age <= 2);
-  const canSubmit = destinationName.trim().length >= 2 && departureCity.trim().length >= 2;
+  const canSubmit     = destA.trim().length >= 2 && destB.trim().length >= 2 && departureCity.trim().length >= 2;
 
-  const addChild = () => setChildren([...children, { age: 4 }]);
+  const addChild    = () => setChildren([...children, { age: 4 }]);
   const removeChild = (i: number) => setChildren(children.filter((_, idx) => idx !== i));
-  const updateAge = (i: number, age: number) =>
+  const updateAge   = (i: number, age: number) =>
     setChildren(children.map((c, idx) => (idx === i ? { ...c, age } : c)));
 
   const handleSubmit = () => {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
-
-    const slug = toSlug(destinationName.trim());
-    const topActivities = activities
-      .split(',')
-      .map((a) => a.trim())
-      .filter(Boolean)
-      .slice(0, 6);
-
-    // Minimal destination object — enough for the trip page to render and call APIs
-    const dest: Destination = {
-      name: destinationName.trim(),
-      tagline: `Your ${destinationName.trim()} trip`,
-      heroGradient: 'from-blue-400 to-cyan-500',
-      theCall: '',
-      whyItWorks: [],
-      tradeoffChips: [],
-      hiddenCatch: '',
-      honestTradeoff: '',
-      whenToIgnore: '',
-      confidence: 'High',
-      bestFor: '',
-      budgetNote: '',
-      topActivities,
-      slug,
-    };
 
     const inputs: TripInputs = {
       vibes: {},
@@ -119,39 +98,34 @@ export default function GoPage() {
       napSchedule,
       napDetails,
       duration,
-      budget: 'comfortable',
+      budget,
       departureCity,
       travelMethod: 'fly',
       directFlightsOnly,
       travelMonth: travelMonth || undefined,
-      dealBreakers,
+      dealBreakers: dealBreakers || 'None specified',
       dietaryRestrictions,
+      destinationA: destA.trim(),
+      destinationB: destB.trim(),
     };
 
     saveTripInputs(inputs);
-    sessionStorage.setItem('tinysuitcase_destination', JSON.stringify(dest));
-    // Clear stale recommendations so the trip page doesn't pick up a previous session
     sessionStorage.removeItem('tinysuitcase_recommendations');
-
-    router.push(`/trip/${slug}`);
+    router.push('/results');
   };
 
   return (
     <div className="min-h-screen bg-cream">
+
       {/* Nav */}
       <div className="bg-white border-b border-cream-dark px-6 py-4 sticky top-0 z-40">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <Link href="/">
             <WordmarkLogo height={38} />
           </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/choose" className="text-sm text-ink-muted hover:text-ink transition-colors">
-              Between two? →
-            </Link>
-            <Link href="/plan" className="text-sm text-ink-muted hover:text-ink transition-colors">
-              Not sure where? →
-            </Link>
-          </div>
+          <Link href="/plan" className="text-sm text-ink-muted hover:text-ink transition-colors">
+            Not sure where? → Get a recommendation
+          </Link>
         </div>
       </div>
 
@@ -160,33 +134,55 @@ export default function GoPage() {
         {/* Header */}
         <div>
           <h1 className="font-display text-3xl font-bold text-navy mb-2">
-            Already decided?
+            Help me choose between two.
           </h1>
           <p className="text-ink-muted text-sm leading-relaxed">
-            Tell us where you&apos;re going. We&apos;ll build your itinerary and packing list. No recommendation step needed.
+            You&apos;ve done the research. We&apos;ll make the call: which one is the better fit for your specific family, and why.
           </p>
         </div>
 
-        {/* Destination */}
-        <div>
-          <label className="block text-sm font-semibold text-navy mb-2">
-            Where are you going? <span className="text-coral">*</span>
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. Cabo San Lucas, Yellowstone, Tokyo..."
-            value={destinationName}
-            onChange={(e) => setDestinationName(e.target.value)}
-            className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors"
-            autoFocus
-          />
+        {/* The two destinations */}
+        <div className="card p-6 space-y-4">
+          <p className="text-sm font-semibold text-navy">Your two options</p>
+
+          <div>
+            <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">
+              Option A <span className="text-coral">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. San Diego"
+              value={destA}
+              onChange={(e) => setDestA(e.target.value)}
+              className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors"
+              autoFocus
+            />
+          </div>
+
+          {/* vs. divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-cream-dark" />
+            <span className="font-display text-sm font-bold text-ink-muted">vs.</span>
+            <div className="flex-1 h-px bg-cream-dark" />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">
+              Option B <span className="text-coral">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Vancouver"
+              value={destB}
+              onChange={(e) => setDestB(e.target.value)}
+              className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors"
+            />
+          </div>
         </div>
 
         {/* Duration */}
         <div>
-          <label className="block text-sm font-semibold text-navy mb-3">
-            How long?
-          </label>
+          <label className="block text-sm font-semibold text-navy mb-3">How long?</label>
           <div className="grid grid-cols-2 gap-2">
             {DURATION_OPTIONS.map((opt) => (
               <button
@@ -213,7 +209,7 @@ export default function GoPage() {
             When? <span className="text-ink-muted font-normal">(optional)</span>
           </label>
           <p className="text-xs text-ink-muted mb-3">
-            Helps flag weather, peak pricing, and what&apos;s open.
+            Affects seasonal conditions, weather, and what&apos;s open at each destination.
           </p>
           <div className="grid grid-cols-4 gap-2 mb-2">
             {MONTHS.map((month) => (
@@ -242,19 +238,27 @@ export default function GoPage() {
           </button>
         </div>
 
-        {/* Activities hint */}
+        {/* Budget */}
         <div>
-          <label className="block text-sm font-semibold text-navy mb-1">
-            What are you planning to do? <span className="text-ink-muted font-normal">(optional)</span>
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. beach days, snorkeling, exploring markets..."
-            value={activities}
-            onChange={(e) => setActivities(e.target.value)}
-            className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors"
-          />
-          <p className="text-xs text-ink-muted mt-1.5">Makes your packing list more specific.</p>
+          <label className="block text-sm font-semibold text-navy mb-3">Budget feel</label>
+          <div className="space-y-2">
+            {BUDGET_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setBudget(opt.value)}
+                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
+                  budget === opt.value
+                    ? 'border-coral bg-coral-light'
+                    : 'border-cream-dark bg-white hover:border-coral/40'
+                }`}
+              >
+                <div className={`font-bold text-sm ${budget === opt.value ? 'text-coral' : 'text-navy'}`}>
+                  {opt.label}
+                </div>
+                <div className="text-ink-muted text-xs mt-0.5">{opt.desc}</div>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Family section */}
@@ -279,16 +283,12 @@ export default function GoPage() {
               <button
                 onClick={() => setAdults(Math.max(1, adults - 1))}
                 className="w-10 h-10 rounded-full border-2 border-cream-dark text-ink font-bold hover:border-coral hover:text-coral transition-colors text-lg"
-              >
-                −
-              </button>
+              >−</button>
               <span className="text-2xl font-bold text-navy w-8 text-center">{adults}</span>
               <button
                 onClick={() => setAdults(Math.min(8, adults + 1))}
                 className="w-10 h-10 rounded-full border-2 border-cream-dark text-ink font-bold hover:border-coral hover:text-coral transition-colors text-lg"
-              >
-                +
-              </button>
+              >+</button>
               <span className="text-ink-muted text-sm ml-2">{adults === 1 ? 'adult' : 'adults'}</span>
             </div>
           </div>
@@ -300,9 +300,7 @@ export default function GoPage() {
               <button
                 onClick={addChild}
                 className="text-sm font-medium text-coral hover:text-coral-dark transition-colors"
-              >
-                + Add a child
-              </button>
+              >+ Add a child</button>
             </div>
             {children.length === 0 ? (
               <p className="text-ink-muted text-sm italic">No children added yet</p>
@@ -331,16 +329,14 @@ export default function GoPage() {
                     <button
                       onClick={() => removeChild(idx)}
                       className="text-ink-muted hover:text-ink transition-colors text-xl"
-                    >
-                      ×
-                    </button>
+                    >×</button>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Nap schedule — shown if any child is 5 or under */}
+          {/* Nap schedule */}
           {(hasYoungChild || napRequired) && (
             <div className="mb-4">
               <NapSection
@@ -369,8 +365,6 @@ export default function GoPage() {
               onChange={(e) => setDepartureCity(e.target.value)}
               className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors"
             />
-
-            {/* Direct flights toggle */}
             <div className="flex gap-2 mt-2">
               {[
                 { value: true,  label: 'Direct flights only',  desc: "Non-stop or we're not going" },
@@ -402,23 +396,21 @@ export default function GoPage() {
           </label>
           <textarea
             rows={2}
-            placeholder="e.g. Being stuck at a resort with nothing to do. Long drives between activities."
+            placeholder="e.g. Stuck at a resort with nothing to do. Long drives between activities."
             value={dealBreakers}
             onChange={(e) => setDealBreakers(e.target.value)}
             className="w-full bg-white border-2 border-cream-dark rounded-xl px-4 py-3 text-sm text-ink focus:outline-none focus:border-coral placeholder-ink-muted transition-colors resize-none"
           />
           <p className="text-xs text-ink-muted mt-1.5">
-            Helps us build an itinerary that avoids your specific frustrations.
+            Helps us flag which destination has more risk of this.
           </p>
         </div>
 
         {/* Dietary restrictions */}
         <div className="card p-5">
-          <label className="block text-sm font-semibold text-navy mb-1">
-            Dietary restrictions
-          </label>
+          <label className="block text-sm font-semibold text-navy mb-1">Dietary restrictions</label>
           <p className="text-xs text-ink-muted mb-3">
-            Affects restaurant recommendations and packing list. Select all that apply.
+            Affects restaurant recommendations downstream. Select all that apply.
           </p>
           <div className="flex flex-wrap gap-2">
             {DIETARY_CHIPS.map((chip) => {
@@ -455,18 +447,14 @@ export default function GoPage() {
         >
           {submitting ? (
             <span className="flex items-center justify-center gap-2">
-              <span className="animate-spin">⟳</span> Building your plan...
+              <span className="animate-spin">⟳</span> Making the call...
             </span>
+          ) : canSubmit ? (
+            `${destA.trim()} vs ${destB.trim()} — make the call →`
           ) : (
-            `Build my ${destinationName.trim() || 'trip'} plan →`
+            'Enter both destinations to continue'
           )}
         </button>
-
-        {!canSubmit && (
-          <p className="text-center text-xs text-ink-muted -mt-4">
-            Fill in destination and where you&apos;re flying from to continue
-          </p>
-        )}
 
       </div>
     </div>

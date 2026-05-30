@@ -136,6 +136,82 @@ Respond with valid JSON only. No markdown, no text outside the JSON:
 For heroGradient use Tailwind classes matching the destination vibe: e.g. "from-blue-400 to-cyan-600", "from-orange-400 to-red-500", "from-emerald-400 to-teal-600".`;
 }
 
+export function buildChoosePrompt(inputs: TripInputs, destinationA: string, destinationB: string): string {
+  const familyContext = buildFamilyContext(inputs);
+
+  return `You are a confident family travel editor. This family has already narrowed their decision to exactly two destinations: ${destinationA} vs ${destinationB}. Your job is to make the call: which one is the better fit for THIS specific family, and why.
+
+${VOICE_GUIDELINES}
+
+${familyContext}
+
+THE CHOICE: ${destinationA} vs ${destinationB}
+
+CRITICAL RULES:
+1. Do not suggest a third option. Pick one of these two.
+2. Lead with the call: "Pick ${destinationA}" or "Pick ${destinationB}." State it like a friend who has been to both, not a travel site hedging its bets.
+3. primary = whichever you recommend. alternative = the other one. Do not flip them.
+4. Every reason MUST reference something specific about THIS family: ages, nap needs, departure city, budget, deal-breakers. "Great destination" is not a reason.
+5. Be honest about what the loser does well. This family considered it for a reason.
+6. tradeoffChips: frame these as head-to-head comparisons where possible. E.g. "Better nap logistics" or "More complex routing."
+7. hiddenCatch: the one thing this family probably hasn't fully thought through about your pick. Be specific.
+8. whenToIgnore: tell them exactly when the OTHER destination would actually be the better call for them. This is how you build trust.
+9. ourCallSummary: 1-2 sentences. Name both destinations. Explain the core reason for the pick in plain parent terms.
+10. If directFlightsOnly is true, factor in which destination has better direct flight options from their departure city.
+
+Respond with valid JSON only. No markdown, no text outside the JSON:
+
+{
+  "ourCallSummary": "1-2 sentences naming both destinations and explaining the core reason for the pick",
+  "primary": {
+    "name": "${destinationA} or ${destinationB} (whichever you recommend)",
+    "tagline": "Punchy, honest tagline. Under 10 words.",
+    "heroGradient": "from-[color]-400 to-[color]-600",
+    "theCall": "One direct sentence. E.g. 'Pick ${destinationA}: the logistics are simpler for a nap-dependent toddler and direct flights from their city are easy.'",
+    "whyItWorks": [
+      "Specific reason referencing their ages/nap/budget/departure city",
+      "Specific reason 2",
+      "Specific reason 3"
+    ],
+    "tradeoffChips": [
+      { "label": "Better nap logistics", "type": "positive" },
+      { "label": "Less distinctive scenery", "type": "negative" }
+    ],
+    "hiddenCatch": "The one thing this family probably hasn't fully considered. Be specific.",
+    "honestTradeoff": "What they give up by choosing this over the other option",
+    "whenToIgnore": "When the other destination would actually be the better call for them specifically",
+    "confidence": "High",
+    "bestFor": "One sentence: what family profile is this pick ideal for",
+    "flightTime": "Approx flight time from their departure city",
+    "budgetNote": "Honest cost note at their budget level, one sentence",
+    "topActivities": ["activity 1", "activity 2", "activity 3", "activity 4"],
+    "slug": "destination-name-slug"
+  },
+  "alternative": {
+    "name": "The other destination",
+    "tagline": "Punchy tagline. Under 10 words.",
+    "heroGradient": "from-[color]-400 to-[color]-600",
+    "theCall": "One direct sentence explaining when this pick makes sense.",
+    "whyItWorks": ["What it does well for this family", "Reason 2", "Reason 3"],
+    "tradeoffChips": [
+      { "label": "More memorable experience", "type": "positive" },
+      { "label": "More complex logistics", "type": "negative" }
+    ],
+    "hiddenCatch": "The hidden catch for this option",
+    "honestTradeoff": "What they give up",
+    "whenToIgnore": "When this pick is wrong for them",
+    "confidence": "Medium",
+    "bestFor": "What family profile this fits best",
+    "flightTime": "Flight time",
+    "budgetNote": "Cost note",
+    "topActivities": ["activity 1", "activity 2", "activity 3", "activity 4"],
+    "slug": "destination-name-slug"
+  }
+}
+
+For heroGradient use Tailwind classes matching the destination vibe: e.g. "from-blue-400 to-cyan-600", "from-orange-400 to-red-500", "from-emerald-400 to-teal-600".`;
+}
+
 export function buildItineraryPrompt(inputs: TripInputs, destination: Destination): string {
   const familyContext = buildFamilyContext(inputs);
   const durationDays =
