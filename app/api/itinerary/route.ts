@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { callClaudeJSON, logUsage } from '@/lib/claude';
+import { callClaudeJSONWithRetry, logUsage } from '@/lib/claude';
 import { buildItineraryPrompt } from '@/lib/prompts';
 import { TripInputs, Destination } from '@/types';
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +12,8 @@ export async function POST(request: NextRequest) {
 
     const prompt = buildItineraryPrompt(tripInputs, destination);
     // 5000 tokens — 5-day itinerary with 5 fields per day; raised from 3500 for headroom.
-    const { result, usage } = await callClaudeJSON<{ days: unknown[] }>(prompt, 5000);
+    // Auto-retries once at 7000 if first attempt fails or is truncated.
+    const { result, usage } = await callClaudeJSONWithRetry<{ days: unknown[] }>(prompt, 5000, 'itinerary');
     logUsage('itinerary', usage);
 
     return NextResponse.json(result);

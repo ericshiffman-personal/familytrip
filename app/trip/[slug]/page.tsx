@@ -10,6 +10,7 @@ import { loadDiningData, saveDiningData } from '@/lib/restaurantBank';
 import { loadHotelData, saveHotelData } from '@/lib/hotelBank';
 import { TripInputs, Destination, ItineraryDay as ItineraryDayType, PackingCategory, RecommendationResponse, DiningData, SavedRestaurant, HotelData } from '@/types';
 import ItineraryDay from '@/components/trip/ItineraryDay';
+import ItineraryLoading from '@/components/trip/ItineraryLoading';
 import PackingList from '@/components/trip/PackingList';
 import ResearchPaste from '@/components/trip/ResearchPaste';
 import DiningGuide from '@/components/trip/DiningGuide';
@@ -120,7 +121,13 @@ export default function TripPage() {
     setItineraryError(null);
     try {
       const res = await fetchWithRetry('/api/itinerary', { tripInputs, destination });
-      const data = await res.json();
+      // Guard against non-JSON responses (e.g. Vercel timeout returns plain-text error)
+      let data: { days?: unknown[]; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('This one took too long to load. Please try again.');
+      }
       if (!res.ok) throw new Error(data.error || 'Failed to load itinerary');
       if (!data.days || !Array.isArray(data.days)) throw new Error('Invalid itinerary format returned');
       setItinerary(data.days);
@@ -137,7 +144,13 @@ export default function TripPage() {
     setPackingError(null);
     try {
       const res = await fetchWithRetry('/api/packing', { tripInputs, destination });
-      const data = await res.json();
+      // Guard against non-JSON responses (e.g. Vercel timeout returns plain-text error)
+      let data: { categories?: unknown[]; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('This one took too long to load. Please try again.');
+      }
       if (!res.ok) throw new Error(data.error || 'Failed to load packing list');
       if (!data.categories || !Array.isArray(data.categories)) throw new Error('Invalid packing list format returned');
       setPackingList(data.categories);
@@ -262,9 +275,10 @@ export default function TripPage() {
         {activeTab === 'itinerary' && (
           <div>
             {itineraryLoading && (
-              <div className="text-center py-16">
-                <p className="text-ink-muted text-sm">Building your day-by-day plan...</p>
-              </div>
+              <ItineraryLoading
+                destination={destination.name}
+                duration={tripInputs.duration}
+              />
             )}
             {itineraryError && (
               <div className="text-center py-10">
